@@ -1,16 +1,24 @@
 #!/bin/python3
 
+from sys import argv
+from random import randrange
 from time import time
 
-array = [ 2, 20, 100, 1, 50, 5, 200, 10 ]
+if len(argv) > 1 and argv[1] == "random":
+    array = []
+    for i in range(1,8):
+        array.append(randrange(200))
+else:
+    array = [2, 20, 100, 1, 50, 5, 200, 10]
 
 def mergesort(data):
     if len(data) == 1:
         return data
-    half = len(data) // 2
-    left = mergesort(data[:half])
-    right = mergesort(data[half:])
-    return merge(left,right)
+    else:
+        half = len(data) // 2
+        left = mergesort(data[:half])
+        right = mergesort(data[half:])
+        return merge(left,right)
 
 def merge(left,right):
     sorted = []
@@ -29,12 +37,12 @@ def merge(left,right):
 
 print(
 """Merge Sort
--------------
+---------------------
 array:
 """ + 
 str(array) + 
 """
--------------
+---------------------
 sorted array:"""
 )
 
@@ -43,7 +51,7 @@ print(mergesort(array))
 end = time()
 
 print(
-"""-------------
+"""---------------------
 sorting took """ + 
 str(round((end-begin)*10**3,2)) + 
 " ms"
