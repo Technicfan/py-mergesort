@@ -51,10 +51,38 @@ def merge(left,right):
 ######################################################
 
 
-def output(data,name,sortfunc):
+def main(args):
+    # check selected sorting arlgorithm
+    if len(args) >= 2 and args[1] == "mergesort":
+        name = "Merge Sort"
+        sortfunc = mergesort
+    else:
+        print("No sorting algorithm selected")
+        exit(0)
+
+    # create array to sort
+    data = []
+    # if random specified create random array
+    if len(args) >= 3 and args[2] == "random":
+        for i in range(0,randrange(2,22)):
+            data.append(randrange(222))
+    # if input specified create array from input
+    elif len(args) > 3 and args[2] == "input":
+        # create integer array
+        if checkdigit(args[3:]) == True:
+            for item in args[3:]:
+                data.append(int(item))
+        # or string array
+        else:
+            for item in args[3:]:
+                data.append(item)
+    else:
+        # default fallback from task
+        data = [2, 20, 100, 1, 50, 5, 200, 10]
+    
     # dynamicly generate length of the seperator
     sep = "\n"
-    for i in range(0,len(str(data)) - 1):
+    for i in range(0,len(str(data))-1):
         sep += "-"
     sep += "\n"
 
@@ -63,6 +91,7 @@ def output(data,name,sortfunc):
     sorted = sortfunc(data)
     end = time()
 
+    # print everything
     print(
     name + " Algorithm" +
     sep +
@@ -79,37 +108,6 @@ def output(data,name,sortfunc):
     str(round((end-begin)*10**3,2)) + 
     " ms"
     )
-
-def main(args):
-    # check selected sorting arlgorithm
-    if len(args) >= 2 and args[1] == "mergesort":
-        algorithm = "Merge Sort"
-        func = mergesort
-    else:
-        print("No sorting algorithm selected")
-        exit(0)
-
-    # init the array that is going to be sorted
-    array = []
-    # if random specified create random array
-    if len(args) >= 3 and args[2] == "random":
-        for i in range(0,randrange(2,20)):
-            array.append(randrange(200))
-    # if input specified create array from input
-    elif len(args) > 3 and args[2] == "input":
-        # create integer array
-        if checkdigit(args[3:]) == True:
-            for item in args[3:]:
-                array.append(int(item))
-        # or string array
-        else:
-            for item in args[3:]:
-                array.append(item)
-    else:
-        # default fallback from task
-        array = [2, 20, 100, 1, 50, 5, 200, 10]
-    
-    output(array,algorithm,func)
 
 # run main function with cmd arguments
 main(argv)
