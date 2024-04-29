@@ -18,18 +18,18 @@ def checkdigit(list):
 def init(args):
     array = []
     # if random specified create random array
-    if len(args) == 2 and args[1] == "random":
+    if len(args) == 3 and args[2] == "random":
         for i in range(0,randrange(2,20)):
             array.append(randrange(200))
     # if input specified create array from input
-    elif len(args) > 2 and args[1] == "input":
+    elif len(args) > 3 and args[2] == "input":
         # create integer array
-        if checkdigit(args[2:]) == True:
-            for item in args[2:]:
+        if checkdigit(args[3:]) == True:
+            for item in args[3:]:
                 array.append(int(item))
         # or string array
         else:
-            for item in args[2:]:
+            for item in args[3:]:
                 array.append(item)
     else:
         # default fallback from task
@@ -43,6 +43,7 @@ def mergesort(data):
         # error if data empty
         case 0:
             return "No input data"
+            exit(1)
         # nothing to do if only one element
         case 1:
             return data
@@ -78,10 +79,14 @@ def main(args):
         sep += "-"
     sep += "\n"
 
-    # mergesorte the data and measure time
-    begin = time()
-    sorted = mergesort(data)
-    end = time()
+    if len(args) >= 2 and args[1] == "mergesort":
+        # mergesorte the data and measure time
+        begin = time()
+        sorted = mergesort(data)
+        end = time()
+    else:
+        print("No Sorting algorithm selected")
+        exit(0)
 
     print(
     "Merge Sort Algorithm" +
