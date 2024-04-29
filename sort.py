@@ -13,8 +13,6 @@ def checkdigit(list):
         if not item.isdigit():
             return False
     return True
-        
-    return array
 
 ######################################################
 # first part of the merge sort algorithm
