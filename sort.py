@@ -13,30 +13,10 @@ def checkdigit(list):
         if not item.isdigit():
             return False
     return True
-
-# init the array that is going to be sorted
-def init(args):
-    array = []
-    # if random specified create random array
-    if len(args) == 3 and args[2] == "random":
-        for i in range(0,randrange(2,20)):
-            array.append(randrange(200))
-    # if input specified create array from input
-    elif len(args) > 3 and args[2] == "input":
-        # create integer array
-        if checkdigit(args[3:]) == True:
-            for item in args[3:]:
-                array.append(int(item))
-        # or string array
-        else:
-            for item in args[3:]:
-                array.append(item)
-    else:
-        # default fallback from task
-        array = [2, 20, 100, 1, 50, 5, 200, 10]
         
     return array
 
+######################################################
 # first part of the merge sort algorithm
 def mergesort(data):
     match len(data):
@@ -70,39 +50,68 @@ def merge(left,right):
     merged += left + right
 
     return merged
+######################################################
 
-def main(args):
-    data = init(args)
+
+def output(data,name,sortfunc):
     # dynamicly generate length of the seperator
     sep = "\n"
     for i in range(0,len(str(data)) - 1):
         sep += "-"
     sep += "\n"
 
-    if len(args) >= 2 and args[1] == "mergesort":
-        # mergesorte the data and measure time
-        begin = time()
-        sorted = mergesort(data)
-        end = time()
-    else:
-        print("No Sorting algorithm selected")
-        exit(0)
+    # sort the data and measure time
+    begin = time()
+    sorted = sortfunc(data)
+    end = time()
 
     print(
-    "Merge Sort Algorithm" +
+    name + " Algorithm" +
     sep +
     "array:\n" +
     # format array
-    ", ".join(str(s) for s in data) + 
+    ", ".join(str(i) for i in data) + 
     sep +
     "sorted array:\n" +
-    ", ".join(str(s) for s in sorted) +
+    # format sorted array
+    ", ".join(str(i) for i in sorted) +
     sep +
     "sorting took " +
     # calulate time and round it
     str(round((end-begin)*10**3,2)) + 
     " ms"
     )
+
+def main(args):
+    # check selected sorting arlgorithm
+    if len(args) >= 2 and args[1] == "mergesort":
+        algorithm = "Merge Sort"
+        func = mergesort
+    else:
+        print("No sorting algorithm selected")
+        exit(0)
+
+    # init the array that is going to be sorted
+    array = []
+    # if random specified create random array
+    if len(args) >= 3 and args[2] == "random":
+        for i in range(0,randrange(2,20)):
+            array.append(randrange(200))
+    # if input specified create array from input
+    elif len(args) > 3 and args[2] == "input":
+        # create integer array
+        if checkdigit(args[3:]) == True:
+            for item in args[3:]:
+                array.append(int(item))
+        # or string array
+        else:
+            for item in args[3:]:
+                array.append(item)
+    else:
+        # default fallback from task
+        array = [2, 20, 100, 1, 50, 5, 200, 10]
+    
+    output(array,algorithm,func)
 
 # run main function with cmd arguments
 main(argv)
