@@ -20,7 +20,7 @@ def mergesort(data):
     match len(data):
         # error if data empty
         case 0:
-            return "No input data"
+            print("No input data")
             exit(1)
         # nothing to do if only one element
         case 1:
@@ -43,11 +43,9 @@ def merge(left,right):
             del left[0]
         else:
             merged.append(right[0])
-            del right[0]
-    # add items left in the arrays to result
-    merged += left + right
-
-    return merged
+            del right[0]        
+    # return all arrays together
+    return merged + left + right
 ######################################################
 
 
@@ -58,7 +56,7 @@ def main(args):
         sortfunc = mergesort
     else:
         print("No sorting algorithm selected")
-        exit(0)
+        exit(1)
 
     # create array to sort
     data = []
