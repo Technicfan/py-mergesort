@@ -70,32 +70,59 @@ def quicksort(array):
         # Don't forget to return something!
         return quicksort(less)+equal+quicksort(greater)  # Just use the + operator to join lists
     # Note that you want equal ^^^^^ not pivot
-    else:  # You need to handle the part at the end of the recursion - when you only have one element in your array, just return the array.
+    else:  # You need to handle the part at the end of the recursion - 
+           # when you only have one element in your array, just return the array.
         return array
 ######################################################
 
 
 def main(args):
     # init available algorithms
-    algorithms = [
+    algorithms = (
         "mergesort",
         "quicksort"
-    ]
-    # check if no or not available algorithm specified
-    if len(args) < 2 or ( len(args) >= 2 and not args[1] in algorithms ):
-        print("No or not available sorting algorithm selected!\nAvailable algorithms:")
+    )
+    # check if there are no arguments or the first one is a form of help
+    if len(args) == 1 or ( len(args) >= 2 and args[1] in ( "help", "--help", "-h", "-help", "--h" ) ):
+        # print help information
+        print(
+            "\nPython script that sorts an array with multible algorithms\n" +
+            "Made and published by Technicfan under MIT Licence on GitHub\n" +
+            "(https://github.com/Technicfan/pysort)\n" +
+            "------------------------------------------------------------\n" +
+            "Usage:\n\n" +
+            "first argument:"
+        )
+        for func in algorithms:
+            print(f"-> {func}")
+        print(
+            "   to use this sorting algorithm\n" +
+            "-> -h, --h, -help, --help or help for this information\n\n" +
+            "second argument:\n" +
+            "-> none to sort default array\n" +
+            "-> random to sort random array\n" +
+            "-> input + min 2 more args to sort array made from next arguments\n\n" +
+            "next arguments only matter if second arg is input\n"
+        )
+        # exit to prevent running the rest of the script
+        exit(0)
+    # check if invalid algorithm specified
+    elif args[1] not in algorithms:
+        print("No, or invalid sorting algorithm selected!\nAvailable algorithms:")
         # show available algorithms to the user
         for func in algorithms:
-            print(f"  {func}")
+            print(f"-> {func} - {algorithms.index(func)}")
         # let the user choose one
-        chosen = input("Choose algorithm:")
+        chosen = input("Choose algorithm:\n>> ")
         # check if it's available and add or replace it in args
         if chosen in algorithms:
-            if len(args) == 1:
-                args.append(chosen)
-            else:
-                args[1] = chosen
+            args[1] = chosen
+            print()
+        elif chosen in ( str(i) for i in range(0,len(algorithms)) ):
+            args[1] = algorithms[int(chosen)]
+            print()
         else:
+            print("invalid option!")
             exit(1)
     # now set selected algorithm
     match args[1]:
@@ -139,20 +166,20 @@ def main(args):
 
     # print everything
     print(
-    name + " Algorithm" +
-    sep +
-    "array:\n" +
-    # format array
-    ", ".join(str(i) for i in data) + 
-    sep +
-    "sorted array:\n" +
-    # format sorted array
-    ", ".join(str(i) for i in sorted) +
-    sep +
-    "sorting took " +
-    # calulate time and round it
-    str(round((end-begin)*10**3,2)) + 
-    " ms"
+        name + " Algorithm" +
+        sep +
+        "array:\n" +
+        # format array
+        ", ".join(str(i) for i in data) + 
+        sep +
+        "sorted array:\n" +
+        # format sorted array
+        ", ".join(str(i) for i in sorted) +
+        sep +
+        "sorting took " +
+        # calulate time and round it
+        str(round((end-begin)*10**3,2)) + 
+        " ms"
     )
 
 # run main function with cmd arguments
