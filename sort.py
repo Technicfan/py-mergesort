@@ -14,6 +14,7 @@ def checkdigit(list):
             return False
     return True
 
+
 ######################################################
 # first part of the merge sort algorithm
 def mergesort(data):
@@ -47,17 +48,64 @@ def merge(left,right):
     # return all arrays together
     return merged + left + right
 ######################################################
+# quick sort algorithm
+# copied from "https://stackoverflow.com/questions/18262306/quicksort-with-python"
+# and renamed function from sort to quicksort
+def quicksort(array):
+    """Sort the array by using quicksort."""
+
+    less = []
+    equal = []
+    greater = []
+
+    if len(array) > 1:
+        pivot = array[0]
+        for x in array:
+            if x < pivot:
+                less.append(x)
+            elif x == pivot:
+                equal.append(x)
+            elif x > pivot:
+                greater.append(x)
+        # Don't forget to return something!
+        return quicksort(less)+equal+quicksort(greater)  # Just use the + operator to join lists
+    # Note that you want equal ^^^^^ not pivot
+    else:  # You need to handle the part at the end of the recursion - when you only have one element in your array, just return the array.
+        return array
+######################################################
 
 
 def main(args):
-    # check selected sorting arlgorithm
-    if len(args) >= 2 and args[1] == "mergesort":
-        name = "Merge Sort"
-        sortfunc = mergesort
-    else:
-        print("No sorting algorithm selected")
-        exit(1)
-
+    # init available algorithms
+    algorithms = [
+        "mergesort",
+        "quicksort"
+    ]
+    # check if no or not available algorithm specified
+    if len(args) < 2 or ( len(args) >= 2 and not args[1] in algorithms ):
+        print("No or not available sorting algorithm selected!\nAvailable algorithms:")
+        # show available algorithms to the user
+        for func in algorithms:
+            print(f"  {func}")
+        # let the user choose one
+        chosen = input("Choose algorithm:")
+        # check if it's available and add or replace it in args
+        if chosen in algorithms:
+            if len(args) == 1:
+                args.append(chosen)
+            else:
+                args[1] = chosen
+        else:
+            exit(1)
+    # now set selected algorithm
+    match args[1]:
+        case "mergesort":
+            name = "Merge Sort"
+            sortfunc = mergesort
+        case "quicksort":
+            name = "Quick Sort"
+            sortfunc = quicksort
+            
     # create array to sort
     data = []
     # if random specified create random array
@@ -109,4 +157,3 @@ def main(args):
 
 # run main function with cmd arguments
 main(argv)
-    
