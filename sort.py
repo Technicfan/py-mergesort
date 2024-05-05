@@ -74,16 +74,66 @@ def quicksort(array):
            # when you only have one element in your array, just return the array.
         return array
 ######################################################
-
+# bubble sort algorithm
+def bubblesort(array):
+    # save array to local var to prevent changing input outside of function
+    array = array[:]
+    for item in array:
+        for i in range(len(array)-1):
+            # check if next item is smaller
+            if array[i] > array[i+1]:
+                # swap items
+                array[i], array[i+1] = array[i+1], array[i]
+    return array
+######################################################
+# selection sort algorithm
+def selectionsort(array):
+    # same as above
+    array = array[:]
+    for index in range(len(array)):
+        # set start index to loop var
+        min = index
+        for i in range(index+1,len(array)):
+            # check if the current item is smaller
+            if array[i] < array[min]:
+                # set min to this
+                min = i
+        # check if min changed
+        if min != index:
+            # swap items
+            array[min], array[index] = array[index], array[min]
+    return array
+######################################################
+# gnome sort algorithm
+def gnomesort(array):
+    # same as above
+    array = array[:]
+    # start at the beginning
+    index = 0
+    while index < len(array):
+        # check if index is 0 or previous item is smaller
+        if index == 0 or array[index] >= array[index-1]:
+            # move on
+            index += 1
+        else:
+            # swap current and previous item
+            array[index], array[index-1] = array[index-1], array[index]
+            # go back
+            index -= 1
+    return array
+######################################################
 
 def main(args):
     # init available algorithms
     algorithms = (
         "mergesort",
-        "quicksort"
+        "quicksort",
+        "bubblesort",
+        "selectionsort",
+        "gnomesort"
     )
     # check if there are no arguments or the first one is a form of help
-    if len(args) == 1 or (len(args) >= 2 and args[1] in ("help", "--help", "-h", "-help", "--h")):
+    if len(args) == 1 or (len(args) == 2 and args[1] in ("help", "--help", "-h", "-help", "--h")):
         # sperator because it's often used
         sep = "\n" + 65 * "-" + "\n"
         print(
@@ -118,7 +168,7 @@ def main(args):
     data = []
     # if random specified create random array
     if len(args) >= 3 and args[2] == "random":
-        for i in range(0,randrange(2,22)):
+        for i in range(randrange(2,22)):
             data.append(randrange(222))
     # if input specified create array from input
     elif len(args) > 3 and args[2] == "input":
@@ -135,7 +185,7 @@ def main(args):
         data = [2, 20, 100, 1, 50, 5, 200, 10]
     
     # dynamicly generate length of the seperator
-    sep = "\n" + len(str(data)) * "-" + "\n"
+    sep = "\n" + (len(str(data)) - 1) * "-" + "\n"
 
     # check if invalid algorithm specified
     if not (args[1] in algorithms or args[1] in (str(i) for i in range(0,len(algorithms)))):
@@ -169,6 +219,15 @@ def main(args):
         case "quicksort" | "1":
             name = "Quick Sort"
             sortfunc = quicksort
+        case "bubblesort" | "2":
+            name = "Bubble Sort"
+            sortfunc = bubblesort
+        case "selectionsort" | "3":
+            name = "Selection Sort"
+            sortfunc = selectionsort
+        case "gnomesort" | "4":
+            name = "Gnome Sort"
+            sortfunc = gnomesort
 
     # sort the data and measure time
     begin = time()
