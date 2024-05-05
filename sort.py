@@ -137,7 +137,7 @@ def main(args):
     # check if there are no arguments or the first one is a form of help
     if len(args) == 1 or (len(args) == 2 and args[1] in ("help", "--help", "-h", "-help", "--h")):
         # sperator because it's often used
-        sep = "\n" + 65 * "-" + "\n"
+        sep = "\n" + 66 * "-" + "\n"
         print(
             sep[1:] +
             format.yellow +
@@ -212,11 +212,15 @@ def main(args):
 
     # check if invalid algorithm specified
     if not (args[1] in algorithms or args[1] in (str(i) for i in range(len(algorithms)))):
+        # make shure that seperator is longer than text displayed
+        msg = "No, or invalid sorting algorithm selected!"
+        if len(msg) > len(sep):
+            sep = "\n" + (len(msg) + 1) * "-" + "\n"
         # show hint for user
         print(
             sep[1:] +
             format.yellow +
-            "No, or invalid sorting algorithm selected!" +
+            msg +
             format.normal +
             sep +
             format.blue +
@@ -227,7 +231,7 @@ def main(args):
             print(f"-> {func} - {algorithms.index(func)}")
         print(format.normal + sep[1:-1])
         # let the user choose one
-        chosen = input(f"{format.cyan}Choose algorithm:\n{format.green}>> {format.normal}")
+        chosen = input(f"{format.cyan}Choose algorithm:\n{format.green}>>{format.normal} ")
         # check if it's available and add or replace it in args
         if chosen in algorithms:
             args[1] = chosen
@@ -261,24 +265,30 @@ def main(args):
     sorted = sortfunc(data)
     end = time()
 
+    # make shure once again that seperator is longer than text
+    headline = name + " Algorithm"
+    if len(headline) + 2 > len(sep):
+            sep = "\n" + (len(headline) + 1) * "-" + "\n"
+
     # print everything
     print(
         sep[1:] +
         format.magenta +
         format.bold +
-        name + " Algorithm" +
+        headline +
         format.normal +
         sep +
         format.blue +
         "array:\n" +
         # format array
-        ", ".join(str(i) for i in data) +
+        str(data)[1:-1] +
         format.normal +
         sep +
         format.cyan +
         "sorted array:\n" +
         # format sorted array
-        ", ".join(str(i) for i in sorted) +
+        #", ".join(str(i) for i in sorted) +
+        str(sorted)[1:-1] +
         format.normal +
         sep +
         format.green +
@@ -294,4 +304,6 @@ try:
     # run main function with cmd arguments
     main(argv)
 except:
-   print(format.red + "An error ocurred" + format.normal)
+    # show error in red
+    print(format.red + "An error ocurred" + format.normal)
+    exit(1)
