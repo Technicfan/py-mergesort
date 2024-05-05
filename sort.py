@@ -17,61 +17,51 @@ def checkdigit(list):
 
 ######################################################
 # first part of the merge sort algorithm
-def mergesort(data):
-    match len(data):
-        # error if data empty
-        case 0:
-            print("No input data")
-            exit(1)
-        # nothing to do if only one element
-        case 1:
-            return data
-        # otherwise mergesort the array recursively
-        case _:
-            half = len(data) // 2
-            left = mergesort(data[:half])
-            right = mergesort(data[half:])
-            return merge(left,right)
+def mergesort(array):
+    # check if array has multible elements
+    if len(array) > 1:
+        # mergesort the array recursively
+        half = len(array) // 2
+        left = mergesort(array[:half])
+        right = mergesort(array[half:])
+        return merge(left,right)
+    else:
+        # nothing to do if only one element or less
+        return array
 
 # second (more complex) part of the algorithm
 def merge(left,right):
-    merged = []
+    sorted = []
     # repeat this until one array is empty
     while len(left) > 0 and len(right) > 0:
         # add smaller value to result and delete it from input
         if left[0] < right[0]:
-            merged.append(left[0])
+            sorted.append(left[0])
             del left[0]
         else:
-            merged.append(right[0])
+            sorted.append(right[0])
             del right[0]        
     # return all arrays together
-    return merged + left + right
+    return sorted + left + right
 ######################################################
 # quick sort algorithm
-# copied from "https://stackoverflow.com/questions/18262306/quicksort-with-python"
-# and renamed function from sort to quicksort
+# taken from "https://stackoverflow.com/questions/18262306/quicksort-with-python"
+# and modified for consistency
 def quicksort(array):
-    """Sort the array by using quicksort."""
-
     less = []
     equal = []
     greater = []
-
     if len(array) > 1:
         pivot = array[0]
-        for x in array:
-            if x < pivot:
-                less.append(x)
-            elif x == pivot:
-                equal.append(x)
-            elif x > pivot:
-                greater.append(x)
-        # Don't forget to return something!
-        return quicksort(less)+equal+quicksort(greater)  # Just use the + operator to join lists
-    # Note that you want equal ^^^^^ not pivot
-    else:  # You need to handle the part at the end of the recursion - 
-           # when you only have one element in your array, just return the array.
+        for item in array:
+            if item < pivot:
+                less.append(item)
+            elif item == pivot:
+                equal.append(item)
+            else:
+                greater.append(item)
+        return quicksort(less) + equal + quicksort(greater)
+    else:
         return array
 ######################################################
 # bubble sort algorithm
