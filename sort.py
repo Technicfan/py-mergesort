@@ -7,6 +7,16 @@ from sys import argv
 from random import randrange
 from time import time
 
+class format:
+    magenta = "\033[95m"
+    blue = "\033[94m"
+    cyan = "\033[96m"
+    green = "\033[92m"
+    yellow = "\033[93m"
+    red = "\033[91m"
+    normal = "\033[0m"
+    bold = "\033[1m"
+
 # function to check if input list is made up of digits
 def checkdigit(list):
     for item in list:
@@ -129,12 +139,28 @@ def main(args):
         sep = "\n" + 65 * "-" + "\n"
         print(
             sep[1:] +
+            format.yellow +
             "Python script that sorts an array with multible algorithms\n" +
-            "Made and published by Technicfan under MIT Licence on GitHub\n" +
+            "Made and published by " + 
+            format.bold +
+            "Technicfan " +
+            format.normal +
+            format.yellow +
+            "under " +
+            format.bold +
+            "MIT Licence " +
+            format.normal +
+            format.yellow +
+            "on GitHub\n" +
             "for learning purposes - (https://github.com/Technicfan/pysort)" +
+            format.normal +
             sep +
+            format.magenta +
+            format.bold +
             "Usage:" +
+            format.normal +
             sep +
+            format.blue +
             "first argument:"
         )
         # print available algorithms
@@ -143,17 +169,22 @@ def main(args):
         print(
             "   to use this sorting algorithm\n" +
             "-> -h, --h, -help, --help or help for this information" +
+            format.normal +
             sep +
+            format.cyan +
             "second argument:\n" +
             "-> none to sort default array\n" +
             "-> random to sort random array\n" +
             "-> input + min 2 more args to sort array made from next arguments" +
+            format.normal +
             sep +
+            format.green +
             "next arguments only matter if second arg is input" +
+            format.normal +
             sep[:-1]
         )
         # exit to prevent running the rest of the script
-        exit(0)
+        return
             
     # create array to sort
     data = []
@@ -179,29 +210,33 @@ def main(args):
     sep = "\n" + (len(str(data)) - 1) * "-" + "\n"
 
     # check if invalid algorithm specified
-    if not (args[1] in algorithms or args[1] in (str(i) for i in range(0,len(algorithms)))):
+    if not (args[1] in algorithms or args[1] in (str(i) for i in range(len(algorithms)))):
         # show hint for user
         print(
             sep[1:] +
+            format.yellow +
             "No, or invalid sorting algorithm selected!" +
+            format.normal +
             sep +
+            format.blue +
             "Available algorithms:"
         )
         # show available algorithms to the user
         for func in algorithms:
             print(f"-> {func} - {algorithms.index(func)}")
-        print(sep[1:-1])
+        print(format.normal + sep[1:-1])
         # let the user choose one
-        chosen = input("Choose algorithm:\n>> ")
+        chosen = input(f"{format.cyan}Choose algorithm:\n{format.green}>> {format.normal}")
         # check if it's available and add or replace it in args
         if chosen in algorithms:
             args[1] = chosen
-        # also index is an option
-        elif chosen in (str(i) for i in range(0,len(algorithms))):
-            args[1] = algorithms[int(chosen)]
         else:
-            print("invalid option!")
-            exit(1)
+            # also index is an option
+            try:
+                args[1] = algorithms[int(chosen)]
+            except:
+                exit(1)
+
     # now set selected algorithm
     match args[1]:
         case "mergesort" | "0":
@@ -228,22 +263,34 @@ def main(args):
     # print everything
     print(
         sep[1:] +
+        format.magenta +
+        format.bold +
         name + " Algorithm" +
+        format.normal +
         sep +
+        format.blue +
         "array:\n" +
         # format array
-        ", ".join(str(i) for i in data) + 
+        ", ".join(str(i) for i in data) +
+        format.normal +
         sep +
+        format.cyan +
         "sorted array:\n" +
         # format sorted array
         ", ".join(str(i) for i in sorted) +
+        format.normal +
         sep +
+        format.green +
         "sorting took " +
         # calulate time and round it
         str(round((end-begin)*10**3,2)) + 
         " ms" +
+        format.normal +
         sep[:-1]
     )
 
-# run main function with cmd arguments
-main(argv)
+try:
+    # run main function with cmd arguments
+    main(argv)
+except:
+   print(format.red + "An error ocurred" + format.normal)
