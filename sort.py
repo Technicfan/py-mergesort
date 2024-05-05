@@ -56,8 +56,6 @@ def merge(left,right):
     return sorted + left + right
 ######################################################
 # quick sort algorithm
-# taken from "https://stackoverflow.com/questions/18262306/quicksort-with-python"
-# and modified for consistency
 def quicksort(array):
     less = []
     equal = []
