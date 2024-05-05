@@ -7,6 +7,7 @@ from sys import argv
 from random import randrange
 from time import time
 
+# class for easier color changing
 class format:
     magenta = "\033[95m"
     blue = "\033[94m"
