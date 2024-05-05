@@ -279,14 +279,13 @@ def main(args):
         format.blue +
         "array:\n" +
         # format array
-        str(data)[1:-1] +
+        ", ".join(str(i) for i in data) +
         format.normal +
         sep +
         format.cyan +
         "sorted array:\n" +
         # format sorted array
-        #", ".join(str(i) for i in sorted) +
-        str(sorted)[1:-1] +
+        ", ".join(str(i) for i in sorted) +
         format.normal +
         sep +
         format.green +
