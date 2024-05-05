@@ -123,6 +123,7 @@ def gnomesort(array):
     return array
 ######################################################
 
+
 def main(args):
     # init available algorithms
     algorithms = (
