@@ -213,7 +213,7 @@ def main(args):
     # check if invalid algorithm specified
     if not (args[1] in algorithms or args[1] in (str(i) for i in range(len(algorithms)))):
         # make shure that seperator is longer than text displayed
-        msg = "No, or invalid sorting algorithm selected!"
+        msg = "No or invalid sorting algorithm selected!"
         if len(msg) > len(sep):
             sep = "\n" + (len(msg) + 1) * "-" + "\n"
         # show hint for user
