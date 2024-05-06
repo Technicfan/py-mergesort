@@ -347,7 +347,7 @@ def main(args):
     time_ms = (end - begin) * 10**3
     for i in range(2,4):
         time_round = round(time_ms, i)
-        if time_round != 0:
+        if time_round > 0:
             break
 
     # print everything
