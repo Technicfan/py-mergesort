@@ -1,12 +1,13 @@
 #!/bin/python3
 
 # import libraries for cmd arguments,
-# generating random numbers
-# and measuring the time
+# generating random numbers,
+# measuring the time
+# and running in parallel
 from sys import argv
 from random import randrange
 from time import time
-
+import multiprocessing as mp
 
 #-----------------------------------------------------------------------------------------------
 # libraries for supports_color function
@@ -15,25 +16,27 @@ import os
 
 # check if terminal supports colors
 # taken from django: https://github.com/django/django/blob/main/django/core/management/color.py
+# modified to run in parallel and added colorama init from before
 # Copyright (c) Django Software Foundation and individual contributors.
 # All rights reserved.
-try:
-    import colorama
+def supports_color(q):
 
-    # Avoid initializing colorama in non-Windows platforms.
-    colorama.just_fix_windows_console()
-except (
-    AttributeError,  # colorama <= 0.4.6.
-    ImportError,  # colorama is not installed.
-    # If just_fix_windows_console() accesses sys.stdout with
-    # WSGIRestrictedStdout.
-    OSError,
-):
-    HAS_COLORAMA = False
-else:
-    HAS_COLORAMA = True
+    try:
+        import colorama
 
-def supports_color():
+        # Avoid initializing colorama in non-Windows platforms.
+        colorama.just_fix_windows_console()
+    except (
+        AttributeError,  # colorama <= 0.4.6.
+        ImportError,  # colorama is not installed.
+        # If just_fix_windows_console() accesses sys.stdout with
+        # WSGIRestrictedStdout.
+        OSError,
+    ):
+        HAS_COLORAMA = False
+    else:
+        HAS_COLORAMA = True
+
     """
     Return True if the running system's terminal supports color,
     and False otherwise.
@@ -61,7 +64,8 @@ def supports_color():
     # isatty is not always implemented, #6223.
     is_a_tty = hasattr(sys.stdout, "isatty") and sys.stdout.isatty()
 
-    return is_a_tty and (
+    q.put(  
+        is_a_tty and (
         sys.platform != "win32"
         or (HAS_COLORAMA and getattr(colorama, "fixed_windows_console", False))
         or "ANSICON" in os.environ
@@ -72,14 +76,19 @@ def supports_color():
         # Microsoft Visual Studio Code's built-in terminal supports colors.
         os.environ.get("TERM_PROGRAM") == "vscode"
         or vt_codes_enabled_in_windows_registry()
-    )
+    ))
 #-----------------------------------------------------------------------------------------------
 
 
 # class for easier color changing
 class format:
-    # use django function
-    if supports_color():
+    # run django function in parallel
+    q = mp.Queue()
+    t = mp.Process(target=supports_color, args=(q,))
+    t.start()
+    t.join()
+    # check output
+    if not q.empty() and q.get():
         magenta = "\033[95m"
         blue = "\033[94m"
         cyan = "\033[96m"
@@ -97,13 +106,6 @@ class format:
         red = ""
         normal = ""
         bold = ""
-
-# function to check if input list is made up of digits
-def checkdigit(list):
-    for item in list:
-        if not item.isdigit():
-            return False
-    return True
 
 
 ############################################################################
@@ -210,6 +212,13 @@ def gnomesort(array):
     return array
 ############################################################################
 
+
+# function to check if input list is made up of digits
+def checkdigit(list):
+    for item in list:
+        if not item.isdigit():
+            return False
+    return True
 
 def main(args):
     # init available algorithms
