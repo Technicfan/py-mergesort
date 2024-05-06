@@ -14,6 +14,22 @@ import os
 # taken from django: https://github.com/django/django/blob/main/django/core/management/color.py
 # Copyright (c) Django Software Foundation and individual contributors.
 # All rights reserved.
+try:
+    import colorama
+
+    # Avoid initializing colorama in non-Windows platforms.
+    colorama.just_fix_windows_console()
+except (
+    AttributeError,  # colorama <= 0.4.6.
+    ImportError,  # colorama is not installed.
+    # If just_fix_windows_console() accesses sys.stdout with
+    # WSGIRestrictedStdout.
+    OSError,
+):
+    HAS_COLORAMA = False
+else:
+    HAS_COLORAMA = True
+
 def supports_color():
     """
     Return True if the running system's terminal supports color,
@@ -57,6 +73,7 @@ def supports_color():
 
 # class for easier color changing
 class format:
+    # use django function
     if supports_color():
         magenta = "\033[95m"
         blue = "\033[94m"
