@@ -345,11 +345,10 @@ def main(args):
 
     # make shure that time is not 0
     time_ms = (end - begin) * 10**3
-    roundto = 2
-    time_round = round(time_ms, roundto)
-    while time_round == 0:
-        roundto += 1
-        time_round = round(time_ms, roundto)
+    for i in range(2,4):
+        time_round = round(time_ms, i)
+        if time_round != 0:
+            break
 
     # print everything
     print(
