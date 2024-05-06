@@ -6,17 +6,72 @@
 from sys import argv
 from random import randrange
 from time import time
+import sys
+import os
+
+# check if terminal supports colors
+# taken from django: https://github.com/django/django/blob/main/django/core/management/color.py
+def supports_color():
+    """
+    Return True if the running system's terminal supports color,
+    and False otherwise.
+    """
+
+    def vt_codes_enabled_in_windows_registry():
+        """
+        Check the Windows Registry to see if VT code handling has been enabled
+        by default, see https://superuser.com/a/1300251/447564.
+        """
+        try:
+            # winreg is only available on Windows.
+            import winreg
+        except ImportError:
+            return False
+        else:
+            try:
+                reg_key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, "Console")
+                reg_key_value, _ = winreg.QueryValueEx(reg_key, "VirtualTerminalLevel")
+            except FileNotFoundError:
+                return False
+            else:
+                return reg_key_value == 1
+
+    # isatty is not always implemented, #6223.
+    is_a_tty = hasattr(sys.stdout, "isatty") and sys.stdout.isatty()
+
+    return is_a_tty and (
+        sys.platform != "win32"
+        or (HAS_COLORAMA and getattr(colorama, "fixed_windows_console", False))
+        or "ANSICON" in os.environ
+        or
+        # Windows Terminal supports VT codes.
+        "WT_SESSION" in os.environ
+        or
+        # Microsoft Visual Studio Code's built-in terminal supports colors.
+        os.environ.get("TERM_PROGRAM") == "vscode"
+        or vt_codes_enabled_in_windows_registry()
+    )
 
 # class for easier color changing
 class format:
-    magenta = "\033[95m"
-    blue = "\033[94m"
-    cyan = "\033[96m"
-    green = "\033[92m"
-    yellow = "\033[93m"
-    red = "\033[91m"
-    normal = "\033[0m"
-    bold = "\033[1m"
+    if supports_color():
+        magenta = "\033[95m"
+        blue = "\033[94m"
+        cyan = "\033[96m"
+        green = "\033[92m"
+        yellow = "\033[93m"
+        red = "\033[91m"
+        normal = "\033[0m"
+        bold = "\033[1m"
+    else:
+        magenta = ""
+        blue = ""
+        cyan = ""
+        green = ""
+        yellow = ""
+        red = ""
+        normal = ""
+        bold = ""
 
 # function to check if input list is made up of digits
 def checkdigit(list):
