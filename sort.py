@@ -385,4 +385,3 @@ try:
 except:
     # show error in red
     print(format.red + "An error ocurred" + format.normal)
-    exit(1)
