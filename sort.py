@@ -343,6 +343,14 @@ def main(args):
     if len(headline) + 2 > len(sep):
             sep = "\n" + (len(headline) + 1) * "-" + "\n"
 
+    # make shure that time is not 0
+    time_ms = (end - begin) * 10**3
+    roundto = 2
+    time_round = round(time_ms, roundto)
+    while time_round == 0:
+        roundto += 1
+        time_round = round(time_ms, roundto)
+
     # print everything
     print(
         sep[1:] +
@@ -366,7 +374,7 @@ def main(args):
         format.green +
         "sorting took " +
         # calulate time and round it
-        str(round((end-begin)*10**3,2)) + 
+        str(time_round) + 
         " ms" +
         format.normal +
         sep[:-1]
