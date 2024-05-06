@@ -6,6 +6,9 @@
 from sys import argv
 from random import randrange
 from time import time
+
+
+#-----------------------------------------------------------------------------------------------
 # libraries for supports_color function
 import sys
 import os
@@ -70,6 +73,8 @@ def supports_color():
         os.environ.get("TERM_PROGRAM") == "vscode"
         or vt_codes_enabled_in_windows_registry()
     )
+#-----------------------------------------------------------------------------------------------
+
 
 # class for easier color changing
 class format:
@@ -101,7 +106,7 @@ def checkdigit(list):
     return True
 
 
-######################################################
+############################################################################
 # first part of the merge sort algorithm
 def mergesort(array):
     # check if array has multible elements
@@ -129,25 +134,33 @@ def merge(left,right):
             del right[0]        
     # return all arrays together
     return sorted + left + right
-######################################################
+############################################################################
 # quick sort algorithm
 def quicksort(array):
+    # init arrays
     less = []
     equal = []
     greater = []
+    # check if multible items in array
     if len(array) > 1:
+        # use first element as pivot
         pivot = array[0]
         for item in array:
+            # smaller items in less
             if item < pivot:
                 less.append(item)
+            # same items in equal
             elif item == pivot:
                 equal.append(item)
+            # bigger items in greater
             else:
                 greater.append(item)
+        # return all arrays after another
         return quicksort(less) + equal + quicksort(greater)
+    # one or less items -> nothing to do
     else:
         return array
-######################################################
+############################################################################
 # bubble sort algorithm
 def bubblesort(array):
     # save array to local var to prevent changing input outside of function
@@ -159,7 +172,7 @@ def bubblesort(array):
                 # swap items
                 array[i], array[i+1] = array[i+1], array[i]
     return array
-######################################################
+############################################################################
 # selection sort algorithm
 def selectionsort(array):
     # same as above
@@ -177,7 +190,7 @@ def selectionsort(array):
             # swap items
             array[min], array[index] = array[index], array[min]
     return array
-######################################################
+############################################################################
 # gnome sort algorithm
 def gnomesort(array):
     # same as above
@@ -195,7 +208,7 @@ def gnomesort(array):
             # go back
             index -= 1
     return array
-######################################################
+############################################################################
 
 
 def main(args):
@@ -211,6 +224,7 @@ def main(args):
     if len(args) == 1 or (len(args) == 2 and args[1] in ("help", "--help", "-h", "-help", "--h")):
         # sperator because it's often used
         sep = "\n" + 66 * "-" + "\n"
+        # print information
         print(
             sep[1:] +
             format.yellow +
@@ -240,6 +254,7 @@ def main(args):
         # print available algorithms
         for func in algorithms:
             print(f"-> {func} or {algorithms.index(func)}")
+        # print rest of help
         print(
             "   to use this sorting algorithm\n" +
             "-> -h, --h, -help, --help or help for this information" +
@@ -372,7 +387,6 @@ def main(args):
         sep +
         format.green +
         "sorting took " +
-        # calulate time and round it
         str(time_round) + 
         " ms" +
         format.normal +
