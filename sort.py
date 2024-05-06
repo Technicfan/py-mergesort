@@ -6,11 +6,14 @@
 from sys import argv
 from random import randrange
 from time import time
+# libraries for supports_color function
 import sys
 import os
 
 # check if terminal supports colors
 # taken from django: https://github.com/django/django/blob/main/django/core/management/color.py
+# Copyright (c) Django Software Foundation and individual contributors.
+# All rights reserved.
 def supports_color():
     """
     Return True if the running system's terminal supports color,
