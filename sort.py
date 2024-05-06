@@ -338,7 +338,7 @@ def main(args):
     sorted = sortfunc(data)
     end = time()
 
-    # make shure once again that seperator is longer than text
+    # make sure once again that seperator is longer than text
     headline = name + " Algorithm"
     if len(headline) + 2 > len(sep):
             sep = "\n" + (len(headline) + 1) * "-" + "\n"
