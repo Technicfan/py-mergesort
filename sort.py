@@ -89,25 +89,25 @@ class format:
         t = mp.Process(target=supports_color, args=(q,))
         t.start()
         t.join()
-        # check output
-        if not q.empty() and q.get():
-            magenta = "\033[95m"
-            blue = "\033[94m"
-            cyan = "\033[96m"
-            green = "\033[92m"
-            yellow = "\033[93m"
-            red = "\033[91m"
-            normal = "\033[0m"
-            bold = "\033[1m"
-        else:
-            magenta = ""
-            blue = ""
-            cyan = ""
-            green = ""
-            yellow = ""
-            red = ""
-            normal = ""
-            bold = ""
+    # check output
+    if not q.empty() and q.get():
+        magenta = "\033[95m"
+        blue = "\033[94m"
+        cyan = "\033[96m"
+        green = "\033[92m"
+        yellow = "\033[93m"
+        red = "\033[91m"
+        normal = "\033[0m"
+        bold = "\033[1m"
+    else:
+        magenta = ""
+        blue = ""
+        cyan = ""
+        green = ""
+        yellow = ""
+        red = ""
+        normal = ""
+        bold = ""
 
 
 ############################################################################
