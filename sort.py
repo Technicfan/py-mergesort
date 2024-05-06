@@ -82,11 +82,12 @@ def supports_color(q):
 
 # class for easier color changing
 class format:
-    # run django function in parallel
-    q = mp.Queue()
-    t = mp.Process(target=supports_color, args=(q,))
-    t.start()
-    t.join()
+    if __name__ == "__main__":
+        # run django function in parallel
+        q = mp.Queue()
+        t = mp.Process(target=supports_color, args=(q,))
+        t.start()
+        t.join()
     # check output
     if not q.empty() and q.get():
         magenta = "\033[95m"
