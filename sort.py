@@ -83,9 +83,9 @@ def supports_color(q):
 # class for easier color changing
 class format:
     q = mp.Queue()
-    t = mp.Process(target=supports_color, args=(q,))
     if __name__ == "__main__":
         # run django function in parallel
+        t = mp.Process(target=supports_color, args=(q,))
         t.start()
         t.join()
     # check output
