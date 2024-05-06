@@ -76,7 +76,8 @@ def supports_color(q):
         # Microsoft Visual Studio Code's built-in terminal supports colors.
         os.environ.get("TERM_PROGRAM") == "vscode"
         or vt_codes_enabled_in_windows_registry()
-    ))
+        )
+    )
 #-----------------------------------------------------------------------------------------------
 
 
@@ -107,8 +108,6 @@ class format:
             red = ""
             normal = ""
             bold = ""
-    else:
-        exit(1)
 
 
 ############################################################################
