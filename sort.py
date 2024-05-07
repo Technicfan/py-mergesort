@@ -8,6 +8,8 @@ from sys import argv
 from random import randrange
 from time import time
 import multiprocessing as mp
+from math import log
+import algorithms as functions
 
 #-----------------------------------------------------------------------------------------------
 # libraries for supports_color function
@@ -109,118 +111,41 @@ class format:
         normal = ""
         bold = ""
 
-
-############################################################################
-# first part of the merge sort algorithm
-def mergesort(array):
-    # check if array has multible elements
-    if len(array) > 1:
-        # mergesort the array recursively
-        half = len(array) // 2
-        left = mergesort(array[:half])
-        right = mergesort(array[half:])
-        return merge(left,right)
-    else:
-        # nothing to do if only one element or less
-        return array
-
-# second (more complex) part of the algorithm
-def merge(left,right):
-    sorted = []
-    # repeat this until one array is empty
-    while len(left) > 0 and len(right) > 0:
-        # add smaller value to result and delete it from input
-        if left[0] < right[0]:
-            sorted.append(left[0])
-            del left[0]
-        else:
-            sorted.append(right[0])
-            del right[0]        
-    # return all arrays together
-    return sorted + left + right
-############################################################################
-# quick sort algorithm
-def quicksort(array):
-    # init arrays
-    less = []
-    equal = []
-    greater = []
-    # check if multible items in array
-    if len(array) > 1:
-        # use first element as pivot
-        pivot = array[0]
-        for item in array:
-            # smaller items in less
-            if item < pivot:
-                less.append(item)
-            # same items in equal
-            elif item == pivot:
-                equal.append(item)
-            # bigger items in greater
-            else:
-                greater.append(item)
-        # return all arrays after another
-        return quicksort(less) + equal + quicksort(greater)
-    # one or less items -> nothing to do
-    else:
-        return array
-############################################################################
-# bubble sort algorithm
-def bubblesort(array):
-    # save array to local var to prevent changing input outside of function
-    array = array[:]
-    for item in array:
-        for i in range(len(array)-1):
-            # check if next item is smaller
-            if array[i] > array[i+1]:
-                # swap items
-                array[i], array[i+1] = array[i+1], array[i]
-    return array
-############################################################################
-# selection sort algorithm
-def selectionsort(array):
-    # same as above
-    array = array[:]
-    for index in range(len(array)):
-        # set start index to loop var
-        min = index
-        for i in range(index+1,len(array)):
-            # check if the current item is smaller
-            if array[i] < array[min]:
-                # set min to this
-                min = i
-        # check if min changed
-        if min != index:
-            # swap items
-            array[min], array[index] = array[index], array[min]
-    return array
-############################################################################
-# gnome sort algorithm
-def gnomesort(array):
-    # same as above
-    array = array[:]
-    # start at the beginning
-    index = 0
-    while index < len(array):
-        # check if index is 0 or previous item is smaller
-        if index == 0 or array[index] >= array[index-1]:
-            # move on
-            index += 1
-        else:
-            # swap current and previous item
-            array[index], array[index-1] = array[index-1], array[index]
-            # go back
-            index -= 1
-    return array
-############################################################################
-
-
 # function to check if input list is made up of digits
 def checkdigit(list):
     for item in list:
         if not item.isdigit():
             return False
     return True
+
+def benchmark(algorithms,arg):
+    funcs = {
+        "mergesort": functions.mergesort_b,
+        "quicksort": functions.quicksort_b,
+        "bubblesort": functions.quicksort_b,
+        "selectionsort": functions.selectionsort_b,
+        "gnomesort": functions.gnomesort_b
+    }
+    for algorithm in algorithms:
+        globals()["steps_" + algorithm] = ()
+    if arg.isdigit():
+        size = int(arg)
+    else:
+        size = 128
+    for i in range(3):
+        for algorithm in algorithms:
+            array = []
+            for j in range(size):
+                array.append(randrange(5*10**3))
+            funcs.get(algorithm)(array)
+            globals()["steps_" + algorithm] += round(functions.steps / len(array)),
+            functions.steps = 0
+    for algorithm in algorithms:
+        print(algorithm.split("sort")[0].capitalize() + " Sort:")
+        mw = 0
+        for steps in globals()["steps_" + algorithm]:
+            mw += steps
+        print(str(round(mw/10)) + " steps per item")
 
 def main(args):
     # init available algorithms
@@ -285,6 +210,12 @@ def main(args):
         )
         # exit to prevent running the rest of the script
         return
+    elif len(args) >= 2 and args[1] == "benchmark":
+        if len(args) > 2:
+            benchmark(algorithms,args[2])
+        else:
+            benchmark(algorithms,"")
+        return
             
     # create array to sort
     data = []
@@ -345,19 +276,19 @@ def main(args):
     match args[1]:
         case "mergesort" | "0":
             name = "Merge Sort"
-            sortfunc = mergesort
+            sortfunc = functions.mergesort
         case "quicksort" | "1":
             name = "Quick Sort"
-            sortfunc = quicksort
+            sortfunc = functions.quicksort
         case "bubblesort" | "2":
             name = "Bubble Sort"
-            sortfunc = bubblesort
+            sortfunc = functions.bubblesort
         case "selectionsort" | "3":
             name = "Selection Sort"
-            sortfunc = selectionsort
+            sortfunc = functions.selectionsort
         case "gnomesort" | "4":
             name = "Gnome Sort"
-            sortfunc = gnomesort
+            sortfunc = functions.gnomesort
 
     # sort the data and measure time
     begin = time()
@@ -404,9 +335,9 @@ def main(args):
         sep[:-1]
     )
 
-try:
+#try:
     # run main function with cmd arguments
-    main(argv)
-except:
+main(argv)
+#except:
     # show error in red
-    print(format.red + "An error ocurred" + format.normal)
+#    print(format.red + "An error ocurred" + format.normal)
