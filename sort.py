@@ -120,32 +120,89 @@ def checkdigit(list):
 
 def benchmark(algorithms,arg):
     funcs = {
-        "mergesort": functions.mergesort_b,
-        "quicksort": functions.quicksort_b,
-        "bubblesort": functions.quicksort_b,
-        "selectionsort": functions.selectionsort_b,
-        "gnomesort": functions.gnomesort_b
+        "mergesort": functions.bench().mergesort,
+        "quicksort": functions.bench().quicksort,
+        "bubblesort": functions.bench().quicksort,
+        "selectionsort": functions.bench().selectionsort,
+        "gnomesort": functions.bench().gnomesort
     }
     for algorithm in algorithms:
         globals()["steps_" + algorithm] = ()
+        globals()["times_" + algorithm] = ()
     if arg.isdigit():
         size = int(arg)
     else:
         size = 128
+    time_s = 0
     for i in range(3):
         for algorithm in algorithms:
             array = []
             for j in range(size):
-                array.append(randrange(5*10**3))
+                array.append(randrange(10**3))
+            start = time()
             funcs.get(algorithm)(array)
-            globals()["steps_" + algorithm] += round(functions.steps / len(array)),
+            end = time()
+            globals()["steps_" + algorithm] += functions.steps,
             functions.steps = 0
+            globals()["times_" + algorithm] = (end - start),
+    sep = "\n" + 30 * "-" + "\n"
+    print(
+        sep[1:] +
+        format.magenta +
+        format.bold +
+        "Benchmark" +
+        format.normal +
+        sep[:-1]
+    )
     for algorithm in algorithms:
-        print(algorithm.split("sort")[0].capitalize() + " Sort:")
-        mw = 0
+        print(format.blue + algorithm.split("sort")[0].capitalize() + " Sort:")
+        mw_s = 0
+        mw_t = 0
         for steps in globals()["steps_" + algorithm]:
-            mw += steps
-        print(str(round(mw/10)) + " steps per item")
+            mw_s += steps
+        for t in globals()["times_" + algorithm]:
+            mw_t += t
+        mw_s = round(mw_s / 3)
+        mw_t = mw_t / 3
+        mw_t_display = round(mw_t * 10**3,2)
+        if mw_t_display == 0:
+            mw_t_display = str(round(mw_t * 10**6,2)) + " µs"
+        else:
+            mw_t_display = str(mw_t_display) + " ms"
+        print(
+            "-> " +
+            format.cyan +
+            str(round(mw_s / size)) +
+            format.blue +
+            " steps per item" +
+            "\n-> " +
+            format.green +
+            str(mw_s) +
+            format.blue +
+            " total steps" +
+            "\n-> " +
+            format.cyan +
+            str(round(mw_t * 10**6 / size,2)) +
+            format.blue +
+            " µs per item" +
+            "\n-> " +
+            format.green +
+            mw_t_display +
+            format.normal +
+            sep[:-1]
+        )
+        time_s += mw_t
+    if time_s >= 1:
+        time_string = str(round(time_s,2)) + " s"
+    else:
+        time_string = str(round((time_s)*10**3,2)) + " ms"
+    print(
+        format.green +
+        "total time: " +
+        time_string +
+        format.normal +
+        sep[:-1]
+    )
 
 def main(args):
     # init available algorithms
@@ -276,19 +333,19 @@ def main(args):
     match args[1]:
         case "mergesort" | "0":
             name = "Merge Sort"
-            sortfunc = functions.mergesort
+            sortfunc = functions.default.mergesort
         case "quicksort" | "1":
             name = "Quick Sort"
-            sortfunc = functions.quicksort
+            sortfunc = functions.default.quicksort
         case "bubblesort" | "2":
             name = "Bubble Sort"
-            sortfunc = functions.bubblesort
+            sortfunc = functions.default.bubblesort
         case "selectionsort" | "3":
             name = "Selection Sort"
-            sortfunc = functions.selectionsort
+            sortfunc = functions.default.selectionsort
         case "gnomesort" | "4":
             name = "Gnome Sort"
-            sortfunc = functions.gnomesort
+            sortfunc = functions.default.gnomesort
 
     # sort the data and measure time
     begin = time()
