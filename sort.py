@@ -118,7 +118,7 @@ def checkdigit(list):
             return False
     return True
 
-def benchmark(algorithms,arg):
+def benchmark(algorithms,arg,data):
     funcs = {
         "mergesort": functions.bench().mergesort,
         "quicksort": functions.bench().quicksort,
@@ -128,24 +128,29 @@ def benchmark(algorithms,arg):
     }
     for algorithm in algorithms:
         globals()["steps_" + algorithm] = ()
-        globals()["times_" + algorithm] = ()
+        globals()["time_" + algorithm] = ()
     if arg.isdigit():
         size = int(arg)
+    elif len(data) != 0:
+        array = data
     else:
         size = 128
     time_s = 0
+    times_mw = []
+    steps_mw = []
     for i in range(3):
         for algorithm in algorithms:
-            array = []
-            for j in range(size):
-                array.append(randrange(10**3))
+            if "array" not in locals():
+                array = []
+                for j in range(size):
+                    array.append(randrange(10**3))
             start = time()
             funcs.get(algorithm)(array)
             end = time()
             globals()["steps_" + algorithm] += functions.steps,
             functions.steps = 0
-            globals()["times_" + algorithm] = (end - start),
-    sep = "\n" + 30 * "-" + "\n"
+            globals()["time_" + algorithm] += (end - start),
+    sep = "\n" + 35 * "-" + "\n"
     print(
         sep[1:] +
         format.magenta +
@@ -160,19 +165,21 @@ def benchmark(algorithms,arg):
         mw_t = 0
         for steps in globals()["steps_" + algorithm]:
             mw_s += steps
-        for t in globals()["times_" + algorithm]:
+        for t in globals()["time_" + algorithm]:
             mw_t += t
         mw_s = round(mw_s / 3)
         mw_t = mw_t / 3
+        times_mw += mw_t,
+        steps_mw += mw_s,
         mw_t_display = round(mw_t * 10**3,2)
         if mw_t_display == 0:
-            mw_t_display = str(round(mw_t * 10**6,2)) + " µs"
+            mw_t_display = str(round(mw_t * 10**6,2)) + format.blue + " µs"
         else:
-            mw_t_display = str(mw_t_display) + " ms"
+            mw_t_display = str(mw_t_display) + format.blue + " ms"
         print(
             "-> " +
             format.cyan +
-            str(round(mw_s / size)) +
+            str(round(mw_s / len(array))) +
             format.blue +
             " steps per item" +
             "\n-> " +
@@ -182,24 +189,37 @@ def benchmark(algorithms,arg):
             " total steps" +
             "\n-> " +
             format.cyan +
-            str(round(mw_t * 10**6 / size,2)) +
+            str(round(mw_t * 10**6 / len(array),2)) +
             format.blue +
             " µs per item" +
             "\n-> " +
             format.green +
             mw_t_display +
+            " total time" +
             format.normal +
             sep[:-1]
         )
+        
         time_s += mw_t
     if time_s >= 1:
         time_string = str(round(time_s,2)) + " s"
     else:
         time_string = str(round((time_s)*10**3,2)) + " ms"
+    fastest = algorithms[times_mw.index(functions.default().bubblesort(times_mw)[0])]
+    efficient = algorithms[steps_mw.index(functions.default().bubblesort(steps_mw)[0])]
     print(
         format.green +
         "total time: " +
         time_string +
+        format.normal +
+        sep +
+        format.yellow +
+        "Fastest: " +
+        fastest.split("sort")[0].capitalize() +
+        " Sort\n" +
+        "Smallest footprint: " +
+        efficient.split("sort")[0].capitalize() +
+        " Sort" +
         format.normal +
         sep[:-1]
     )
@@ -250,28 +270,27 @@ def main(args):
         # print rest of help
         print(
             "   to use this sorting algorithm\n" +
-            "-> -h, --h, -help, --help or help for this information" +
+            "-> -h, --h, -help, --help or help for this information\n" +
+            "-> benchmark for testing efficiency" +
             format.normal +
             sep +
             format.cyan +
             "second argument:\n" +
-            "-> none to sort default array\n" +
-            "-> random to sort random array\n" +
-            "-> input + min 2 more args to sort array made from next arguments" +
+            "-> none to sort/benchmark default array\n" +
+            "-> random to sort/benchmark random array\n" +
+            "-> input + min 2 more args to sort/benchmark\n" +
+            "   array made from next arguments\n" +
+            "-> benchmark as first arg + size" +
             format.normal +
             sep +
             format.green +
-            "next arguments only matter if second arg is input" +
+            "-> anything if input as second arg\n" +
+            "-> number for size of random benchmark array after\n" +
+            "   benchmark + size as previous args" +
             format.normal +
             sep[:-1]
         )
         # exit to prevent running the rest of the script
-        return
-    elif len(args) >= 2 and args[1] == "benchmark":
-        if len(args) > 2:
-            benchmark(algorithms,args[2])
-        else:
-            benchmark(algorithms,"")
         return
             
     # create array to sort
@@ -293,6 +312,13 @@ def main(args):
     else:
         # default fallback from task
         data = [2, 20, 100, 1, 50, 5, 200, 10]
+
+    if len(args) >= 2 and args[1] == "benchmark":
+        if len(args) > 3 and args[2] == "size":
+            benchmark(algorithms,args[3],())
+        else:
+            benchmark(algorithms,"",data)
+        return
     
     # dynamicly generate length of the seperator
     sep = "\n" + (len(str(data)) - 1) * "-" + "\n"

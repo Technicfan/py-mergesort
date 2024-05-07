@@ -139,14 +139,14 @@ class bench:
 # normal sort functions
 class default:
     # first part of the merge sort algorithm
-    def mergesort(array):
+    def mergesort(self,array):
         # check if array has multible elements
         if len(array) > 1:
             # mergesort the array recursively
             half = len(array) // 2
-            left = mergesort(array[:half])
-            right = mergesort(array[half:])
-            return merge(left,right)
+            left = self.mergesort(array[:half])
+            right = self.mergesort(array[half:])
+            return self.merge(left,right)
         else:
             # nothing to do if only one element or less
             return array
@@ -167,7 +167,7 @@ class default:
         return sorted + left + right
 
     # quick sort algorithm
-    def quicksort(array):
+    def quicksort(self,array):
         # init arrays
         less = []
         equal = []
@@ -187,13 +187,13 @@ class default:
                 else:
                     greater.append(item)
             # return all arrays after another
-            return quicksort(less) + equal + quicksort(greater)
+            return self.quicksort(less) + equal + self.quicksort(greater)
         # one or less items -> nothing to do
         else:
             return array
 
     # bubble sort algorithm
-    def bubblesort(array):
+    def bubblesort(self,array):
         # save array to local var to prevent changing input outside of function
         array = array[:]
         for item in array:
@@ -205,7 +205,7 @@ class default:
         return array
 
     # selection sort algorithm
-    def selectionsort(array):
+    def selectionsort(self,array):
         # same as above
         array = array[:]
         for index in range(len(array)):
@@ -223,7 +223,7 @@ class default:
         return array
 
     # gnome sort algorithm
-    def gnomesort(array):
+    def gnomesort(self,array):
         # same as above
         array = array[:]
         # start at the beginning
