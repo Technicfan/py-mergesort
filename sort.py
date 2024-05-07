@@ -359,19 +359,19 @@ def main(args):
     match args[1]:
         case "mergesort" | "0":
             name = "Merge Sort"
-            sortfunc = functions.default.mergesort
+            sortfunc = functions.default().mergesort
         case "quicksort" | "1":
             name = "Quick Sort"
-            sortfunc = functions.default.quicksort
+            sortfunc = functions.default().quicksort
         case "bubblesort" | "2":
             name = "Bubble Sort"
-            sortfunc = functions.default.bubblesort
+            sortfunc = functions.default().bubblesort
         case "selectionsort" | "3":
             name = "Selection Sort"
-            sortfunc = functions.default.selectionsort
+            sortfunc = functions.default().selectionsort
         case "gnomesort" | "4":
             name = "Gnome Sort"
-            sortfunc = functions.default.gnomesort
+            sortfunc = functions.default().gnomesort
 
     # sort the data and measure time
     begin = time()
