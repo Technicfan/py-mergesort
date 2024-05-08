@@ -194,11 +194,16 @@ def benchmark(algorithms,arg,data):
         times_mw.append(mw_t)
         steps_mw.append(mw_s)
         mw_t_display = round(mw_t * 10**3,2)
+        mw_t_per_n = round(mw_t * 10**6 / len(array),2)
         # check if time is too small for ms
         if mw_t_display == 0:
             mw_t_display = str(round(mw_t * 10**6,2)) + format.blue + " µs"
         else:
             mw_t_display = str(mw_t_display) + format.blue + " ms"
+        if mw_t_per_n >= 1000:
+            mw_t_per_n = str(round(mw_t * 10**3 / len(array),2)) + " ms"
+        else:
+            mw_t_per_n = str(mw_t_per_n) + " µs"
         # print information
         print(
             "-> " +
@@ -213,9 +218,9 @@ def benchmark(algorithms,arg,data):
             " total steps" +
             "\n-> " +
             format.cyan +
-            str(round(mw_t * 10**6 / len(array),2)) +
+            mw_t_per_n +
             format.blue +
-            " µs per item" +
+            " per item" +
             "\n-> " +
             format.green +
             mw_t_display +
