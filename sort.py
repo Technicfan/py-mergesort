@@ -1,14 +1,11 @@
 #!/bin/python3
 
 # import libraries for cmd arguments,
-# generating random numbers,
-# measuring the time
-# and running in parallel
+# generating random numbers
+# and measuring the time
 from sys import argv
 from random import randrange
 from time import time
-import multiprocessing as mp
-from math import log
 import algorithms as functions
 
 #-----------------------------------------------------------------------------------------------
@@ -21,7 +18,7 @@ import os
 # modified to run in parallel and added colorama init from before
 # Copyright (c) Django Software Foundation and individual contributors.
 # All rights reserved.
-def supports_color(q):
+def supports_color():
 
     try:
         import colorama
@@ -65,9 +62,8 @@ def supports_color(q):
 
     # isatty is not always implemented, #6223.
     is_a_tty = hasattr(sys.stdout, "isatty") and sys.stdout.isatty()
-
-    q.put(  
-        is_a_tty and (
+ 
+    return is_a_tty and (
         sys.platform != "win32"
         or (HAS_COLORAMA and getattr(colorama, "fixed_windows_console", False))
         or "ANSICON" in os.environ
@@ -79,20 +75,13 @@ def supports_color(q):
         os.environ.get("TERM_PROGRAM") == "vscode"
         or vt_codes_enabled_in_windows_registry()
         )
-    )
 #-----------------------------------------------------------------------------------------------
 
 
 # class for easier color changing
 class format:
-    q = mp.Queue()
-    if __name__ == "__main__":
-        # run django function in parallel
-        t = mp.Process(target=supports_color, args=(q,))
-        t.start()
-        t.join()
-    # check output
-    if not q.empty() and q.get():
+    # check if terminal supports colors
+    if supports_color():
         magenta = "\033[95m"
         blue = "\033[94m"
         cyan = "\033[96m"
@@ -101,6 +90,7 @@ class format:
         red = "\033[91m"
         normal = "\033[0m"
         bold = "\033[1m"
+    # else set colors to empty strings
     else:
         magenta = ""
         blue = ""
@@ -118,6 +108,8 @@ def checkdigit(list):
             return False
     return True
 
+# function for benchmark option
+# (main is too long so new function)
 def benchmark(algorithms,arg,data):
     # init functions from other file
     funcs = {
@@ -453,13 +445,15 @@ def main(args):
         sep[:-1]
     )
 
-# option to see errors
-if "debug" in argv:
-    main(argv)
-else:
-    try:
-        # run main function with cmd arguments
+# protection
+if __name__ == "__main__":
+    # option to see errors
+    if "debug" in argv:
         main(argv)
-    except:
-        # show error in red
-        print(format.red + "An error ocurred" + format.normal)
+    else:
+        try:
+            # run main function with cmd arguments
+            main(argv)
+        except:
+            # show error in red
+            print(format.red + "An error ocurred" + format.normal)
