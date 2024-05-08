@@ -115,9 +115,10 @@ def benchmark(algorithms,arg,data):
     funcs = {
         "mergesort": functions.bench().mergesort,
         "quicksort": functions.bench().quicksort,
-        "bubblesort": functions.bench().quicksort,
+        "bubblesort": functions.bench().bubblesort,
         "selectionsort": functions.bench().selectionsort,
-        "gnomesort": functions.bench().gnomesort
+        "gnomesort": functions.bench().gnomesort,
+        "insertionsort": functions.bench().insertionsort
     }
     # init iteration arrays
     for algorithm in algorithms:
@@ -132,12 +133,16 @@ def benchmark(algorithms,arg,data):
         array = data
     else:
         size = 128
+    if "array" in locals():
+        iterations = 1
+    else:
+        iterations = 3
     # init total time and mw arrays
     time_s = 0
     times_mw = []
     steps_mw = []
     # benchmark 3 arrays for accuracy
-    for i in range(3):
+    for i in range(iterations):
         # do this for every algorithm
         for algorithm in algorithms:
             # check if array var already set
@@ -145,7 +150,7 @@ def benchmark(algorithms,arg,data):
             if "array" not in locals():
                 array = []
                 for j in range(size):
-                    array.append(randrange(10**3))
+                    array.append(randrange(size))
             # measure time
             start = time()
             # call function for algorithm from funcs
@@ -184,8 +189,8 @@ def benchmark(algorithms,arg,data):
             mw_s += steps
         for t in globals()["time_" + algorithm]:
             mw_t += t
-        mw_s = round(mw_s / 3)
-        mw_t = mw_t / 3
+        mw_s = round(mw_s / iterations)
+        mw_t = mw_t / iterations
         times_mw.append(mw_t)
         steps_mw.append(mw_s)
         mw_t_display = round(mw_t * 10**3,2)
@@ -253,7 +258,8 @@ def main(args):
         "quicksort",
         "bubblesort",
         "selectionsort",
-        "gnomesort"
+        "gnomesort",
+        "insertionsort"
     )
     # check if there are no arguments or the first one is a form of help
     if len(args) == 1 or (len(args) == 2 and args[1] in ("help", "--help", "-h", "-help", "--h")):
@@ -397,6 +403,9 @@ def main(args):
         case "gnomesort" | "4":
             name = "Gnome Sort"
             sortfunc = functions.default().gnomesort
+        case "insertionsort" | "5":
+            name = "Insertion Sort"
+            sortfunc = functions.default().insertionsort
 
     # sort the data and measure time
     begin = time()

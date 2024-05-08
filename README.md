@@ -6,3 +6,4 @@ small python script that sorts an array (school project, made for learning purpo
   - bubblesort
   - selectionsort
   - gnomesort
+  - insertionsort

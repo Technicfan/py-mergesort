@@ -50,7 +50,7 @@ class bench:
         # check if multible items in array
         if len(array) > 1:
             # use first element as pivot
-            pivot = array[0]
+            pivot = array[len(array) // 2]
             steps += 1
             for item in array:
                 # smaller items in less
@@ -136,6 +136,28 @@ class bench:
         steps += 1
         return array
 
+    # insertion sort algorithm
+    def insertionsort(self,array):
+        global steps
+        # same as above
+        array = array[:]
+        steps += 1
+        for i in range(len(array)-1):
+            # next item and next index
+            nexti = i + 1
+            next = array[nexti]
+            steps += 2
+            # move values right as long as they're smaller
+            while nexti > 0 and next < array[nexti-1]:
+                steps += 2
+                array[nexti] = array[nexti-1]
+                nexti -= 1
+                steps += 1
+            # achieve swapping
+            array[nexti] = next
+            steps += 1
+        return array
+
 # normal sort functions
 class default:
     # first part of the merge sort algorithm
@@ -175,7 +197,7 @@ class default:
         # check if multible items in array
         if len(array) > 1:
             # use first element as pivot
-            pivot = array[0]
+            pivot = array[len(array) // 2]
             for item in array:
                 # smaller items in less
                 if item < pivot:
@@ -238,4 +260,20 @@ class default:
                 array[index], array[index-1] = array[index-1], array[index]
                 # go back
                 index -= 1
+        return array
+
+    # insertion sort algorithm
+    def insertionsort(self,array):
+        # same as above
+        array = array[:]
+        for i in range(len(array)-1):
+            # next item and next index
+            nexti = i + 1
+            next = array[nexti]
+            # move values right as long as they're smaller
+            while nexti > 0 and next < array[nexti-1]:
+                array[nexti] = array[nexti-1]
+                nexti -= 1
+            # achieve swapping
+            array[nexti] = next
         return array
