@@ -15,7 +15,7 @@ import os
 
 # check if terminal supports colors
 # taken from django: https://github.com/django/django/blob/main/django/core/management/color.py
-# modified to run in parallel and added colorama init from before
+# moved colorama init from before into the function
 # Copyright (c) Django Software Foundation and individual contributors.
 # All rights reserved.
 def supports_color():
