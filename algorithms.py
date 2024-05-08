@@ -152,7 +152,7 @@ class default:
             return array
 
     # second (more complex) part of the algorithm
-    def merge(left,right):
+    def merge(self,left,right):
         sorted = []
         # repeat this until one array is empty
         while len(left) > 0 and len(right) > 0:

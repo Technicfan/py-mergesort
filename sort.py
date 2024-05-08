@@ -119,6 +119,7 @@ def checkdigit(list):
     return True
 
 def benchmark(algorithms,arg,data):
+    # init functions from other file
     funcs = {
         "mergesort": functions.bench().mergesort,
         "quicksort": functions.bench().quicksort,
@@ -126,41 +127,65 @@ def benchmark(algorithms,arg,data):
         "selectionsort": functions.bench().selectionsort,
         "gnomesort": functions.bench().gnomesort
     }
+    # init iteration arrays
     for algorithm in algorithms:
-        globals()["steps_" + algorithm] = ()
-        globals()["time_" + algorithm] = ()
+        globals()["steps_" + algorithm] = []
+        globals()["time_" + algorithm] = []
+    # init seperator
+    sep = "\n" + 35 * "-" + "\n"
+    # init array from input
     if arg.isdigit():
         size = int(arg)
     elif len(data) != 0:
         array = data
     else:
         size = 128
+    # init total time and mw arrays
     time_s = 0
     times_mw = []
     steps_mw = []
+    # benchmark 3 arrays for accuracy
     for i in range(3):
+        # do this for every algorithm
         for algorithm in algorithms:
+            # check if array var already set
+            # otherwise generate random array
             if "array" not in locals():
                 array = []
                 for j in range(size):
                     array.append(randrange(10**3))
+            # measure time
             start = time()
+            # call function for algorithm from funcs
             funcs.get(algorithm)(array)
             end = time()
-            globals()["steps_" + algorithm] += functions.steps,
+            # add measured values to array of algorithm
+            globals()["steps_" + algorithm].append(functions.steps)
+            globals()["time_" + algorithm].append(end - start)
+            # reset stepss
             functions.steps = 0
-            globals()["time_" + algorithm] += (end - start),
-    sep = "\n" + 35 * "-" + "\n"
+    # check if multible or only one item in array
+    if len(array) == 1:
+        num = " item"
+    else:
+        num = " items"
+    # print heading
     print(
         sep[1:] +
         format.magenta +
         format.bold +
         "Benchmark" +
+        " with " +
+        str(len(array)) +
+        num +
         format.normal +
         sep[:-1]
     )
+    # do this for every algorithm
     for algorithm in algorithms:
+        # print name
         print(format.blue + algorithm.split("sort")[0].capitalize() + " Sort:")
+        # calcultae mws for time and steps
         mw_s = 0
         mw_t = 0
         for steps in globals()["steps_" + algorithm]:
@@ -169,13 +194,15 @@ def benchmark(algorithms,arg,data):
             mw_t += t
         mw_s = round(mw_s / 3)
         mw_t = mw_t / 3
-        times_mw += mw_t,
-        steps_mw += mw_s,
+        times_mw.append(mw_t)
+        steps_mw.append(mw_s)
         mw_t_display = round(mw_t * 10**3,2)
+        # check if time is too small for ms
         if mw_t_display == 0:
             mw_t_display = str(round(mw_t * 10**6,2)) + format.blue + " µs"
         else:
             mw_t_display = str(mw_t_display) + format.blue + " ms"
+        # print information
         print(
             "-> " +
             format.cyan +
@@ -199,14 +226,17 @@ def benchmark(algorithms,arg,data):
             format.normal +
             sep[:-1]
         )
-        
+        # add time of algorithm to total time
         time_s += mw_t
+    # check if time needs to be displayed in seconds
     if time_s >= 1:
         time_string = str(round(time_s,2)) + " s"
     else:
         time_string = str(round((time_s)*10**3,2)) + " ms"
+    # get smallest values from array and the corresponding name
     fastest = algorithms[times_mw.index(functions.default().bubblesort(times_mw)[0])]
     efficient = algorithms[steps_mw.index(functions.default().bubblesort(steps_mw)[0])]
+    # print summary
     print(
         format.green +
         "total time: " +
@@ -313,9 +343,12 @@ def main(args):
         # default fallback from task
         data = [2, 20, 100, 1, 50, 5, 200, 10]
 
+    # call benchmark if specified
     if len(args) >= 2 and args[1] == "benchmark":
+        # if size given, use it
         if len(args) > 3 and args[2] == "size":
             benchmark(algorithms,args[3],())
+        # else use data array
         else:
             benchmark(algorithms,"",data)
         return
@@ -384,13 +417,16 @@ def main(args):
             sep = "\n" + (len(headline) + 1) * "-" + "\n"
 
     # make shure that time is not 0
-    time_ms = (end - begin) * 10**3
-    for i in range(2,4):
-        time_round = round(time_ms, i)
-        if time_round > 0:
-            break
-
+    time_display = (end - begin) * 10**3
+    #for i in range(2,4):
+    #    time_round = round(time_ms, i)
+    #    if time_round > 0:
+    #        break
     # print everything
+    if round(time_display,2) == 0:
+        time_display = str(round(time_display*10**3,2)) + " µs"
+    else:
+        time_display = str(round(time_display,2)) + " ms"
     print(
         sep[1:] +
         format.magenta +
@@ -412,15 +448,18 @@ def main(args):
         sep +
         format.green +
         "sorting took " +
-        str(time_round) + 
-        " ms" +
+        time_display +
         format.normal +
         sep[:-1]
     )
 
-#try:
-    # run main function with cmd arguments
-main(argv)
-#except:
-    # show error in red
-#    print(format.red + "An error ocurred" + format.normal)
+# option to see errors
+if "debug" in argv:
+    main(argv)
+else:
+    try:
+        # run main function with cmd arguments
+        main(argv)
+    except:
+        # show error in red
+        print(format.red + "An error ocurred" + format.normal)
