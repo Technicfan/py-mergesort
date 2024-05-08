@@ -5,7 +5,7 @@
 # and measuring the time
 from sys import argv
 from random import randrange
-from time import time_ns as time
+from time import perf_counter as time
 import algorithms as functions
 
 #-----------------------------------------------------------------------------------------------
@@ -138,7 +138,7 @@ def benchmark(algorithms,arg,data):
     else:
         iterations = 3
     # init total time and mw arrays
-    time_ns = 0
+    time_s = 0
     times_mw = []
     steps_mw = []
     # benchmark 3 arrays for accuracy
@@ -193,10 +193,10 @@ def benchmark(algorithms,arg,data):
         mw_t = mw_t / iterations
         times_mw.append(mw_t)
         steps_mw.append(mw_s)
-        mw_t_display = round(mw_t * 10**-6,2)
+        mw_t_display = round(mw_t * 10**3,2)
         # check if time is too small for ms
         if mw_t_display == 0:
-            mw_t_display = str(round(mw_t * 10**-3,2)) + format.blue + " µs"
+            mw_t_display = str(round(mw_t * 10**6,2)) + format.blue + " µs"
         else:
             mw_t_display = str(mw_t_display) + format.blue + " ms"
         # print information
@@ -213,7 +213,7 @@ def benchmark(algorithms,arg,data):
             " total steps" +
             "\n-> " +
             format.cyan +
-            str(round(mw_t * 10**-3 / len(array),2)) +
+            str(round(mw_t * 10**6 / len(array),2)) +
             format.blue +
             " µs per item" +
             "\n-> " +
@@ -224,12 +224,12 @@ def benchmark(algorithms,arg,data):
             sep[:-1]
         )
         # add time of algorithm to total time
-        time_ns += mw_t
+        time_s += mw_t
     # check if time needs to be displayed in seconds
-    if time_ns >= 10**9:
-        time_string = str(round(time_ns*10**-9,2)) + " s"
+    if time_s >= 1:
+        time_string = str(round(time_s,2)) + " s"
     else:
-        time_string = str(round((time_ns)*10**-6,2)) + " ms"
+        time_string = str(round((time_s)*10**3,2)) + " ms"
     # get smallest values from array and the corresponding name
     fastest = algorithms[times_mw.index(functions.default().bubblesort(times_mw)[0])]
     efficient = algorithms[steps_mw.index(functions.default().bubblesort(steps_mw)[0])]
@@ -418,7 +418,7 @@ def main(args):
             sep = "\n" + (len(headline) + 1) * "-" + "\n"
 
     # make shure that time is not 0
-    time_display = (end - begin) * 10**-6
+    time_display = (end - begin) * 10**3
     if round(time_display,2) == 0:
         time_display = str(round(time_display*10**3,2)) + " µs"
     else:
