@@ -200,6 +200,7 @@ def benchmark(algorithms,arg,data):
             mw_t_display = str(round(mw_t * 10**6,2)) + format.blue + " µs"
         else:
             mw_t_display = str(mw_t_display) + format.blue + " ms"
+        # check if time is too big for µs
         if mw_t_per_n >= 1000:
             mw_t_per_n = str(round(mw_t * 10**3 / len(array),2)) + " ms"
         else:
