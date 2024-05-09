@@ -236,7 +236,7 @@ def benchmark(algorithms,arg,data):
         time_string = str(round(time_s,2)) + " s"
     else:
         time_string = str(round((time_s)*10**3,2)) + " ms"
-    # get smallest values from array and the corresponding name
+    # get smallest and biggest values from array and the corresponding name
     sorted_times = functions.default().bubblesort(times_mw)
     sorted_steps = functions.default().bubblesort(steps_mw)
     fastest = algorithms[times_mw.index(sorted_times[0])]
@@ -245,12 +245,12 @@ def benchmark(algorithms,arg,data):
     biggest = algorithms[steps_mw.index(sorted_steps[-1])]
     # print summary
     print(
-        format.green +
+        format.yellow +
         "total time: " +
         time_string +
         format.normal +
         sep +
-        format.yellow +
+        format.green +
         "Fastest: " +
         fastest.split("sort")[0].capitalize() +
         " Sort\n" +
