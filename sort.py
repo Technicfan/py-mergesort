@@ -237,8 +237,12 @@ def benchmark(algorithms,arg,data):
     else:
         time_string = str(round((time_s)*10**3,2)) + " ms"
     # get smallest values from array and the corresponding name
-    fastest = algorithms[times_mw.index(functions.default().bubblesort(times_mw)[0])]
-    efficient = algorithms[steps_mw.index(functions.default().bubblesort(steps_mw)[0])]
+    sorted_times = functions.default().bubblesort(times_mw)
+    sorted_steps = functions.default().bubblesort(steps_mw)
+    fastest = algorithms[times_mw.index(sorted_times[0])]
+    smallest = algorithms[steps_mw.index(sorted_steps[0])]
+    slowest = algorithms[times_mw.index(sorted_times[-1])]
+    biggest = algorithms[steps_mw.index(sorted_steps[-1])]
     # print summary
     print(
         format.green +
@@ -251,7 +255,16 @@ def benchmark(algorithms,arg,data):
         fastest.split("sort")[0].capitalize() +
         " Sort\n" +
         "Smallest footprint: " +
-        efficient.split("sort")[0].capitalize() +
+        smallest.split("sort")[0].capitalize() +
+        " Sort" +
+        format.normal +
+        sep +
+        format.red +
+        "Slowest: " +
+        slowest.split("sort")[0].capitalize() +
+        " Sort\n" +
+        "Biggest footprint: " +
+        biggest.split("sort")[0].capitalize() +
         " Sort" +
         format.normal +
         sep[:-1]
