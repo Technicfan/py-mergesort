@@ -108,18 +108,66 @@ def checkdigit(list):
             return False
     return True
 
+# function to display help information
+def help(algorithms):
+    # sperator because it's often used
+    sep = "\n" + 66 * "-" + "\n"
+    # print information
+    print(
+        sep[1:] +
+        format.yellow +
+        "Python script that sorts an array with multible algorithms\n" +
+        "Made and published by " + 
+        format.bold +
+        "Technicfan " +
+        format.normal +
+        format.yellow +
+        "under " +
+        format.bold +
+        "MIT Licence " +
+        format.normal +
+        format.yellow +
+        "on GitHub\n" +
+        "for learning purposes - (https://github.com/Technicfan/pysort)" +
+        format.normal +
+        sep +
+        format.magenta +
+        format.bold +
+        "Usage:" +
+        format.normal +
+        sep +
+        format.blue +
+        "first argument:"
+    )
+    # print available algorithms
+    for func in algorithms:
+        print(f"-> {func} or {algorithms.index(func)}")
+    # print rest of help
+    print(
+        "   to use this sorting algorithm\n" +
+        "-> -h, --h, -help, --help or help for this information\n" +
+        "-> benchmark for testing efficiency" +
+        format.normal +
+        sep +
+        format.cyan +
+        "second argument:\n" +
+        "-> none to sort/benchmark default array\n" +
+        "-> random to sort/benchmark random array\n" +
+        "-> input + min 2 more args to sort/benchmark\n" +
+        "   array made from next arguments\n" +
+        "-> benchmark as first arg + size" +
+        format.normal +
+        sep +
+        format.green +
+        "-> anything if input as second arg\n" +
+        "-> number for size of random benchmark array after\n" +
+        "   benchmark + size as previous args" +
+        format.normal +
+        sep[:-1]
+    )
+
 # function for benchmark option
-# (main is too long so new function)
 def benchmark(algorithms,arg,data):
-    # init functions from other file
-    funcs = {
-        "mergesort": functions.bench().mergesort,
-        "quicksort": functions.bench().quicksort,
-        "bubblesort": functions.bench().bubblesort,
-        "selectionsort": functions.bench().selectionsort,
-        "gnomesort": functions.bench().gnomesort,
-        "insertionsort": functions.bench().insertionsort
-    }
     # init iteration arrays
     for algorithm in algorithms:
         globals()["steps_" + algorithm] = []
@@ -153,8 +201,8 @@ def benchmark(algorithms,arg,data):
                     array.append(randrange(size))
             # measure time
             start = time()
-            # call function for algorithm from funcs
-            funcs.get(algorithm)(array)
+            # call function for algorithm
+            exec(f"functions.bench().{algorithm}(array)")
             end = time()
             # add measured values to array of algorithm
             globals()["steps_" + algorithm].append(functions.steps)
@@ -281,62 +329,9 @@ def main(args):
         "insertionsort"
     )
     # check if there are no arguments or the first one is a form of help
-    if len(args) == 1 or (len(args) == 2 and args[1] in ("help", "--help", "-h", "-help", "--h")):
-        # sperator because it's often used
-        sep = "\n" + 66 * "-" + "\n"
-        # print information
-        print(
-            sep[1:] +
-            format.yellow +
-            "Python script that sorts an array with multible algorithms\n" +
-            "Made and published by " + 
-            format.bold +
-            "Technicfan " +
-            format.normal +
-            format.yellow +
-            "under " +
-            format.bold +
-            "MIT Licence " +
-            format.normal +
-            format.yellow +
-            "on GitHub\n" +
-            "for learning purposes - (https://github.com/Technicfan/pysort)" +
-            format.normal +
-            sep +
-            format.magenta +
-            format.bold +
-            "Usage:" +
-            format.normal +
-            sep +
-            format.blue +
-            "first argument:"
-        )
-        # print available algorithms
-        for func in algorithms:
-            print(f"-> {func} or {algorithms.index(func)}")
-        # print rest of help
-        print(
-            "   to use this sorting algorithm\n" +
-            "-> -h, --h, -help, --help or help for this information\n" +
-            "-> benchmark for testing efficiency" +
-            format.normal +
-            sep +
-            format.cyan +
-            "second argument:\n" +
-            "-> none to sort/benchmark default array\n" +
-            "-> random to sort/benchmark random array\n" +
-            "-> input + min 2 more args to sort/benchmark\n" +
-            "   array made from next arguments\n" +
-            "-> benchmark as first arg + size" +
-            format.normal +
-            sep +
-            format.green +
-            "-> anything if input as second arg\n" +
-            "-> number for size of random benchmark array after\n" +
-            "   benchmark + size as previous args" +
-            format.normal +
-            sep[:-1]
-        )
+    if len(args) == 1 or (len(args) == 2 and \
+       args[1] in ("help", "--help", "-h", "-help", "--h")):
+        help(algorithms)
         # exit to prevent running the rest of the script
         return
             
@@ -406,25 +401,12 @@ def main(args):
                 exit(1)
 
     # now set selected algorithm
-    match args[1]:
-        case "mergesort" | "0":
-            name = "Merge Sort"
-            sortfunc = functions.default().mergesort
-        case "quicksort" | "1":
-            name = "Quick Sort"
-            sortfunc = functions.default().quicksort
-        case "bubblesort" | "2":
-            name = "Bubble Sort"
-            sortfunc = functions.default().bubblesort
-        case "selectionsort" | "3":
-            name = "Selection Sort"
-            sortfunc = functions.default().selectionsort
-        case "gnomesort" | "4":
-            name = "Gnome Sort"
-            sortfunc = functions.default().gnomesort
-        case "insertionsort" | "5":
-            name = "Insertion Sort"
-            sortfunc = functions.default().insertionsort
+    try:
+        algorithm = algorithms[int(args[1])]
+    except:
+        algorithm = args[1]
+    # get name of function
+    sortfunc = getattr(functions.default(), algorithm)
 
     # sort the data and measure time
     begin = time()
@@ -432,7 +414,7 @@ def main(args):
     end = time()
 
     # make sure once again that seperator is longer than text
-    headline = name + " Algorithm"
+    headline = algorithm.split("sort")[0].capitalize() + " Sort Algorithm"
     if len(headline) + 2 > len(sep):
             sep = "\n" + (len(headline) + 1) * "-" + "\n"
 
