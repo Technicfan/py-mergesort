@@ -1,18 +1,13 @@
 #!/bin/python3
 
-# import libraries for cmd arguments,
-# generating random numbers
-# and measuring the time
-from sys import argv
+# import needed libraries
+import os
+import sys
 from random import randrange
 from time import perf_counter as time
 import algorithms as functions
 
 #-----------------------------------------------------------------------------------------------
-# libraries for supports_color function
-import sys
-import os
-
 # check if terminal supports colors
 # taken from django: https://github.com/django/django/blob/main/django/core/management/color.py
 # moved colorama init from before into the function
@@ -108,6 +103,26 @@ def checkdigit(list):
             return False
     return True
 
+# function to dispay measured time in correct unit
+def format_time(t):
+    if t >= 1:
+        return str(round(t,2)) + " s"
+    t *= 10**3
+    iterations = 0
+    while round(t,2) == 0:
+        t *= 10**3
+        iterations += 1
+    match iterations:
+        case 0:
+            unit = " ms"
+        case 1:
+            unit = " µs"
+        case 2:
+            unit = " ns"
+        case _:
+            return "None"
+    return str(round(t,2)) + unit
+
 # function to display help information
 def help(algorithms):
     # sperator because it's often used
@@ -173,17 +188,19 @@ def benchmark(algorithms,arg,data):
         globals()["steps_" + algorithm] = []
         globals()["time_" + algorithm] = []
     # init seperator
-    sep = "\n" + 35 * "-" + "\n"
+    if os.get_terminal_size()[0] < 35:
+        sep = "\n" + os.get_terminal_size()[0] * "-" + "\n"
+    else:
+        sep = "\n" + 35 * "-" + "\n"
     # init array from input
-    if arg.isdigit():
-        size = int(arg)
-    elif len(data) != 0:
+    if len(data) != 0:
         array = data
+        iterations = 1
+    elif arg.isdigit():
+        size = int(arg)
     else:
         size = 128
-    if "array" in locals():
-        iterations = 1
-    else:
+    if "iterations" not in locals():
         iterations = 3
     # init total time and mw arrays
     time_s = 0
@@ -195,7 +212,7 @@ def benchmark(algorithms,arg,data):
         for algorithm in algorithms:
             # check if array var already set
             # otherwise generate random array
-            if "array" not in locals():
+            if "size" in locals():
                 array = []
                 for j in range(size):
                     array.append(randrange(size))
@@ -241,18 +258,9 @@ def benchmark(algorithms,arg,data):
         mw_t = mw_t / iterations
         times_mw.append(mw_t)
         steps_mw.append(mw_s)
-        mw_t_display = round(mw_t * 10**3,2)
-        mw_t_per_n = round(mw_t * 10**6 / len(array),2)
-        # check if time is too small for ms
-        if mw_t_display == 0:
-            mw_t_display = str(round(mw_t * 10**6,2)) + format.blue + " µs"
-        else:
-            mw_t_display = str(mw_t_display) + format.blue + " ms"
-        # check if time is too big for µs
-        if mw_t_per_n >= 1000:
-            mw_t_per_n = str(round(mw_t * 10**3 / len(array),2)) + " ms"
-        else:
-            mw_t_per_n = str(mw_t_per_n) + " µs"
+        # format time
+        mw_t_display = format_time(mw_t)
+        mw_t_per_n = format_time(mw_t / len(array))
         # print information
         print(
             "-> " +
@@ -279,11 +287,8 @@ def benchmark(algorithms,arg,data):
         )
         # add time of algorithm to total time
         time_s += mw_t
-    # check if time needs to be displayed in seconds
-    if time_s >= 1:
-        time_string = str(round(time_s,2)) + " s"
-    else:
-        time_string = str(round((time_s)*10**3,2)) + " ms"
+    # format time
+    time_string = format_time(time_s)
     # get smallest and biggest values from array and the corresponding name
     sorted_times = functions.default().bubblesort(times_mw)
     sorted_steps = functions.default().bubblesort(steps_mw)
@@ -359,20 +364,26 @@ def main(args):
     if len(args) >= 2 and args[1] == "benchmark":
         # if size given, use it
         if len(args) > 3 and args[2] == "size":
-            benchmark(algorithms,args[3],())
+            benchmark(algorithms,args[3],[])
         # else use data array
         else:
             benchmark(algorithms,"",data)
         return
     
     # dynamicly generate length of the seperator
-    sep = "\n" + (len(str(data)) - 1) * "-" + "\n"
+    # and check if it fits in current terminal
+    if os.get_terminal_size()[0] < len(str(data)) - 1:
+        sep = "\n" + os.get_terminal_size()[0] * "-" + "\n"
+        smallterm = True
+    else:
+        sep = "\n" + (len(str(data)) - 1) * "-" + "\n"
+        smallterm = False
 
     # check if invalid algorithm specified
     if not (args[1] in algorithms or args[1] in (str(i) for i in range(len(algorithms)))):
         # make shure that seperator is longer than text displayed
         msg = "No or invalid sorting algorithm selected!"
-        if len(msg) > len(sep):
+        if len(msg) > len(sep) and not smallterm:
             sep = "\n" + (len(msg) + 1) * "-" + "\n"
         # show hint for user
         print(
@@ -415,15 +426,11 @@ def main(args):
 
     # make sure once again that seperator is longer than text
     headline = algorithm.split("sort")[0].capitalize() + " Sort Algorithm"
-    if len(headline) + 2 > len(sep):
+    if len(headline) + 2 > len(sep) and not smallterm:
             sep = "\n" + (len(headline) + 1) * "-" + "\n"
 
-    # make shure that time is not 0
-    time_display = (end - begin) * 10**3
-    if round(time_display,2) == 0:
-        time_display = str(round(time_display*10**3,2)) + " µs"
-    else:
-        time_display = str(round(time_display,2)) + " ms"
+    # format time
+    time_display = format_time(end - begin)
     print(
         sep[1:] +
         format.magenta +
@@ -453,12 +460,12 @@ def main(args):
 # protection
 if __name__ == "__main__":
     # option to see errors
-    if "debug" in argv:
-        main(argv)
+    if "debug" in sys.argv:
+        main(sys.argv)
     else:
         try:
             # run main function with cmd arguments
-            main(argv)
+            main(sys.argv)
         except:
             # show error in red
             print(format.red + "An error ocurred" + format.normal)
