@@ -174,9 +174,14 @@ def help(algorithms):
         format.normal +
         sep +
         format.green +
-        "-> anything if input as second arg\n" +
+        "third argument:\n" +
         "-> number for size of random benchmark array after\n" +
         "   benchmark + size as previous args" +
+        format.normal +
+        sep +
+        format.yellow +
+        "-> anything if input as second arg\n" +
+        "-> debug to show errors" +
         format.normal +
         sep[:-1]
     )
@@ -359,16 +364,6 @@ def main(args):
     else:
         # default fallback from task
         data = [2, 20, 100, 1, 50, 5, 200, 10]
-
-    # call benchmark if specified
-    if len(args) >= 2 and args[1] == "benchmark":
-        # if size given, use it
-        if len(args) > 3 and args[2] == "size":
-            benchmark(algorithms,args[3],[])
-        # else use data array
-        else:
-            benchmark(algorithms,"",data)
-        return
     
     # dynamicly generate length of the seperator
     # and check if it fits in current terminal
@@ -379,10 +374,11 @@ def main(args):
         sep = "\n" + (len(str(data)) - 1) * "-" + "\n"
         smallterm = False
 
-    # check if invalid algorithm specified
-    if not (args[1] in algorithms or args[1] in (str(i) for i in range(len(algorithms)))):
+    # check if invalid option specified
+    if not (args[1] in algorithms + ("benchmark",) or \
+       args[1] in (str(i) for i in range(len(algorithms)))):
         # make shure that seperator is longer than text displayed
-        msg = "No or invalid sorting algorithm selected!"
+        msg = "No or invalid option specified!"
         if len(msg) > len(sep) and not smallterm:
             sep = "\n" + (len(msg) + 1) * "-" + "\n"
         # show hint for user
@@ -393,7 +389,8 @@ def main(args):
             format.normal +
             sep +
             format.blue +
-            "Available algorithms:"
+            "Available options:\n" +
+            "-> benchmark"
         )
         # show available algorithms to the user
         for func in algorithms:
@@ -401,8 +398,8 @@ def main(args):
         print(format.normal + sep[1:-1])
         # let the user choose one
         chosen = input(f"{format.cyan}Choose algorithm:\n{format.green}>>{format.normal} ")
-        # check if it's available and add or replace it in args
-        if chosen in algorithms:
+        # check if it's available and replace it in args
+        if chosen in algorithms + ("benchmark",):
             args[1] = chosen
         else:
             # also index is an option
@@ -410,6 +407,17 @@ def main(args):
                 args[1] = algorithms[int(chosen)]
             except:
                 exit(1)
+
+    # call benchmark if specified
+    if len(args) >= 2 and args[1] == "benchmark":
+        # if size given, use it
+        if len(args) > 3 and args[2] == "size":
+            benchmark(algorithms,args[3],[])
+        # else use data array
+        else:
+            benchmark(algorithms,"",data)
+        # exit to prevent further execution
+        return
 
     # now set selected algorithm
     try:
@@ -424,8 +432,14 @@ def main(args):
     sorted = sortfunc(data)
     end = time()
 
+    # check if multible or only one item in array
+    if len(data) == 1:
+        num = " item"
+    else:
+        num = " items"
     # make sure once again that seperator is longer than text
-    headline = algorithm.split("sort")[0].capitalize() + " Sort Algorithm"
+    headline = algorithm.split("sort")[0].capitalize() + \
+               " Sort Algorithm with " + str(len(data)) + num
     if len(headline) + 2 > len(sep) and not smallterm:
             sep = "\n" + (len(headline) + 1) * "-" + "\n"
 
