@@ -62,7 +62,7 @@ def supports_color():
 
     # isatty is not always implemented, #6223.
     is_a_tty = hasattr(sys.stdout, "isatty") and sys.stdout.isatty()
- 
+
     return is_a_tty and (
         sys.platform != "win32"
         or (HAS_COLORAMA and getattr(colorama, "fixed_windows_console", False))
@@ -74,7 +74,7 @@ def supports_color():
         # Microsoft Visual Studio Code's built-in terminal supports colors.
         os.environ.get("TERM_PROGRAM") == "vscode"
         or vt_codes_enabled_in_windows_registry()
-        )
+    )
 #-----------------------------------------------------------------------------------------------
 
 
