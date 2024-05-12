@@ -376,7 +376,7 @@ def main(args):
         # default fallback from task
         data = [2, 20, 100, 1, 50, 5, 200, 10]
     
-    # dynamicly generate length of the separator
+    # dynamically generate length of the separator
     # and check if it fits in current terminal
     sep = init_sep(len(str(data)) - 1)
 
