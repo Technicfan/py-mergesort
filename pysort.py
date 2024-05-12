@@ -134,8 +134,11 @@ def format_time(t):
 
 # function to display help information
 def help(algorithms):
-    # sperator because it's often used
-    sep = "\n" + 66 * "-" + "\n"
+    # init seperator
+    if os.get_terminal_size()[0] < 66:
+        sep = "\n" + os.get_terminal_size()[0] * "-" + "\n"
+    else:
+        sep = "\n" + 66 * "-" + "\n"
     # print information
     print(
         sep[1:] +
@@ -202,7 +205,7 @@ def benchmark(algorithms,arg,data):
         globals()["steps_" + algorithm] = []
         globals()["time_" + algorithm] = []
     # init seperator
-    if os.get_terminal_size()[0] < 35:
+    if os.get_terminal_size()[0] < 60:
         sep = "\n" + os.get_terminal_size()[0] * "-" + "\n"
     else:
         sep = "\n" + 60 * "-" + "\n"
