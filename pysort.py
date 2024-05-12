@@ -119,6 +119,14 @@ def init_sep(length):
     else:
         return "\n" + length * "-" + "\n"
 
+# functions to get available sorting algorithms
+def get_algorithms(module):
+    algorithms = []
+    for function in dir(module):
+        if "sort" in function:
+            algorithms.append(function)
+    return algorithms
+
 # function to dispay measured time in correct unit
 def format_time(t):
     if t >= 1:
@@ -203,7 +211,9 @@ def help(algorithms):
     )
 
 # function for benchmark option
-def benchmark(algorithms,arg,data):
+def benchmark(arg,data):
+    # init algorithms to benchmark
+    algorithms = get_algorithms(functions.bench())
     # init iteration arrays
     for algorithm in algorithms:
         globals()["steps_" + algorithm] = []
@@ -338,14 +348,7 @@ def benchmark(algorithms,arg,data):
 
 def main(args):
     # init available algorithms
-    algorithms = (
-        "mergesort",
-        "quicksort",
-        "bubblesort",
-        "selectionsort",
-        "gnomesort",
-        "insertionsort"
-    )
+    algorithms = get_algorithms(functions.default())
     # check if there are no arguments or the first one is a form of help
     if len(args) == 1 or (len(args) == 2 and \
            args[1] in ("help", "--help", "-h", "-help", "--h")):
@@ -378,7 +381,7 @@ def main(args):
     sep = init_sep(len(str(data)) - 1)
 
     # check if invalid option specified
-    if not (args[1] in algorithms + ("benchmark",) or \
+    if not (args[1] in algorithms +  ["benchmark",] or \
            args[1] in (str(i) for i in range(len(algorithms)))):
         # make shure that separator is longer than text displayed
         msg = "No or invalid option specified!"
@@ -403,7 +406,7 @@ def main(args):
         chosen = input(f"{format.cyan}Choose algorithm:\
                      \n{format.green}>>{format.normal} ")
         # check if it's available and replace it in args
-        if chosen in algorithms + ("benchmark",):
+        if chosen in algorithms + ["benchmark",]:
             args[1] = chosen
         else:
             # also index is an option
@@ -416,10 +419,10 @@ def main(args):
     if len(args) >= 2 and args[1] == "benchmark":
         # if size given, use it
         if len(args) > 3 and args[2] == "size":
-            benchmark(algorithms,args[3],[])
+            benchmark(args[3],[])
         # else use data array
         else:
-            benchmark(algorithms,"",data)
+            benchmark("",data)
         # exit to prevent further execution
         return
 
