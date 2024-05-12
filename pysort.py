@@ -221,16 +221,16 @@ def benchmark(algorithms,arg,data):
                 array = []
                 for j in range(size):
                     array.append(randrange(size))
+            # set sortfunc before for more time accuracy
+            sortfunc = getattr(functions.bench(),algorithm)
             # measure time
             start = time()
             # call function for algorithm
-            exec(f"functions.bench().{algorithm}(array)")
+            sortfunc(array)
             end = time()
             # add measured values to array of algorithm
             globals()["steps_" + algorithm].append(functions.steps)
             globals()["time_" + algorithm].append(end - start)
-            # reset stepss
-            functions.steps = 0
     # check if multible or only one item in array
     if len(array) == 1:
         num = " item"

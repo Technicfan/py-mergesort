@@ -1,6 +1,10 @@
-steps = 0
 # sort functions that count steps for benchmark
 class bench:
+    # init/reset steps on every call
+    def __init__(self):
+        global steps
+        steps = 0
+
     # first part of the merge sort algorithm
     def mergesort(self,array):
         global steps
@@ -20,12 +24,11 @@ class bench:
     # second (more complex) part of the algorithm
     def merge(self,left,right):
         global steps
-        steps += 1
         sorted = []
-        steps += 2
+        steps += 1
         # repeat this until one array is empty
         while len(left) > 0 and len(right) > 0:
-            steps += 1
+            steps += 2
             # add smaller value to result and delete it from input
             if left[0] < right[0]:
                 sorted.append(left[0])
@@ -35,7 +38,8 @@ class bench:
                 sorted.append(right[0])
                 del right[0]
                 steps += 2
-        steps += 1
+            steps += 1
+        steps += 2
         # return all arrays together
         return sorted + left + right
 
@@ -56,15 +60,17 @@ class bench:
                 # smaller items in less
                 if item < pivot:
                     less.append(item)
+                    steps += 2
                 # same items in equal
                 elif item == pivot:
                     equal.append(item)
+                    steps += 3
                 # bigger items in greater
                 else:
                     greater.append(item)
-                steps += 2
+                    steps += 3
             # return all arrays after another
-            steps += 1
+            steps += 2
             return self.quicksort(less) + equal + self.quicksort(greater)
         # one or less items -> nothing to do
         else:
