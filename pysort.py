@@ -112,6 +112,13 @@ def find_indices(array,search):
                 indices.append(i)
         return indices
 
+# function to make shure seperator is not too long
+def init_sep(length):
+    if os.get_terminal_size()[0] < length:
+        return "\n" + os.get_terminal_size()[0] * "-" + "\n"
+    else:
+        return "\n" + length * "-" + "\n"
+
 # function to dispay measured time in correct unit
 def format_time(t):
     if t >= 1:
@@ -135,10 +142,7 @@ def format_time(t):
 # function to display help information
 def help(algorithms):
     # init seperator
-    if os.get_terminal_size()[0] < 66:
-        sep = "\n" + os.get_terminal_size()[0] * "-" + "\n"
-    else:
-        sep = "\n" + 66 * "-" + "\n"
+    sep = init_sep(66)
     # print information
     print(
         sep[1:] +
@@ -205,10 +209,7 @@ def benchmark(algorithms,arg,data):
         globals()["steps_" + algorithm] = []
         globals()["time_" + algorithm] = []
     # init seperator
-    if os.get_terminal_size()[0] < 60:
-        sep = "\n" + os.get_terminal_size()[0] * "-" + "\n"
-    else:
-        sep = "\n" + 60 * "-" + "\n"
+    sep = init_sep(60)
     # init array from input
     if len(data) != 0:
         array = data
@@ -374,20 +375,15 @@ def main(args):
     
     # dynamicly generate length of the seperator
     # and check if it fits in current terminal
-    if os.get_terminal_size()[0] < len(str(data)) - 1:
-        sep = "\n" + os.get_terminal_size()[0] * "-" + "\n"
-        smallterm = True
-    else:
-        sep = "\n" + (len(str(data)) - 1) * "-" + "\n"
-        smallterm = False
+    sep = init_sep(len(str(data)) - 1)
 
     # check if invalid option specified
     if not (args[1] in algorithms + ("benchmark",) or \
            args[1] in (str(i) for i in range(len(algorithms)))):
         # make shure that seperator is longer than text displayed
         msg = "No or invalid option specified!"
-        if len(msg) > len(sep) and not smallterm:
-            sep = "\n" + (len(msg) + 1) * "-" + "\n"
+        if len(msg) + 2 > len(sep):
+            sep = init_sep(len(msg) + 1)
         # show hint for user
         print(
             sep[1:] +
@@ -404,8 +400,8 @@ def main(args):
             print(f"-> {func} - {i}")
         print(format.normal + sep[1:-1])
         # let the user choose one
-        chosen = \
-            input(f"{format.cyan}Choose algorithm:\n{format.green}>>{format.normal} ")
+        chosen = input(f"{format.cyan}Choose algorithm:\
+                     \n{format.green}>>{format.normal} ")
         # check if it's available and replace it in args
         if chosen in algorithms + ("benchmark",):
             args[1] = chosen
@@ -448,8 +444,8 @@ def main(args):
     # make sure once again that seperator is longer than text
     headline = algorithm.split("sort")[0].capitalize() + \
                    " Sort Algorithm with " + str(len(data)) + num
-    if len(headline) + 2 > len(sep) and not smallterm:
-            sep = "\n" + (len(headline) + 1) * "-" + "\n"
+    if len(headline) + 2 > len(sep):
+            sep = init_sep(len(headline) + 1)
 
     print(
         sep[1:] +
