@@ -103,6 +103,15 @@ def checkdigit(list):
             return False
     return True
 
+# function to find multible indices with same
+# value in list/array
+def find_indices(array,search):
+        indices = []
+        for i, item in enumerate(array):
+            if item == search:
+                indices.append(i)
+        return indices
+
 # function to dispay measured time in correct unit
 def format_time(t):
     if t >= 1:
@@ -155,8 +164,8 @@ def help(algorithms):
         "first argument:"
     )
     # print available algorithms
-    for func in algorithms:
-        print(f"-> {func} or {algorithms.index(func)}")
+    for i, func in enumerate(algorithms):
+        print(f"-> {func} or {i}")
     # print rest of help
     print(
         "   to use this sorting algorithm\n" +
@@ -196,7 +205,7 @@ def benchmark(algorithms,arg,data):
     if os.get_terminal_size()[0] < 35:
         sep = "\n" + os.get_terminal_size()[0] * "-" + "\n"
     else:
-        sep = "\n" + 35 * "-" + "\n"
+        sep = "\n" + 60 * "-" + "\n"
     # init array from input
     if len(data) != 0:
         array = data
@@ -207,11 +216,10 @@ def benchmark(algorithms,arg,data):
         size = 128
     if "iterations" not in locals():
         iterations = 3
-    # init total time and mw arrays
-    time_s = 0
+    # init mw arrays
     times_mw = []
     steps_mw = []
-    # benchmark 3 arrays for accuracy
+    # benchmark 3 arrays for more representative result
     for i in range(iterations):
         # do this for every algorithm
         for algorithm in algorithms:
@@ -221,15 +229,16 @@ def benchmark(algorithms,arg,data):
                 array = []
                 for j in range(size):
                     array.append(randrange(size))
+            # use class as instance to prevent steps resetting
+            instance = functions.bench()
             # set sortfunc before for more time accuracy
-            sortfunc = getattr(functions.bench(),algorithm)
-            # measure time
+            sortfunc = getattr(instance,algorithm)
+            # measure time taken to sort
             start = time()
-            # call function for algorithm
             sortfunc(array)
             end = time()
             # add measured values to array of algorithm
-            globals()["steps_" + algorithm].append(functions.steps)
+            globals()["steps_" + algorithm].append(instance.steps)
             globals()["time_" + algorithm].append(end - start)
     # check if multible or only one item in array
     if len(array) == 1:
@@ -253,19 +262,10 @@ def benchmark(algorithms,arg,data):
         # print name
         print(format.blue + algorithm.split("sort")[0].capitalize() + " Sort:")
         # calcultae mws for time and steps
-        mw_s = 0
-        mw_t = 0
-        for steps in globals()["steps_" + algorithm]:
-            mw_s += steps
-        for t in globals()["time_" + algorithm]:
-            mw_t += t
-        mw_s = round(mw_s / iterations)
-        mw_t = mw_t / iterations
+        mw_s = round(sum(globals()["steps_" + algorithm]) / iterations)
+        mw_t = sum(globals()["time_" + algorithm]) / iterations
         times_mw.append(mw_t)
         steps_mw.append(mw_s)
-        # format time
-        mw_t_display = format_time(mw_t)
-        mw_t_per_n = format_time(mw_t / len(array))
         # print information
         print(
             "-> " +
@@ -280,27 +280,29 @@ def benchmark(algorithms,arg,data):
             " total steps" +
             "\n-> " +
             format.cyan +
-            mw_t_per_n +
+            # format time/item
+            format_time(mw_t / len(array)) +
             format.blue +
             " per item" +
             "\n-> " +
             format.green +
-            mw_t_display +
+            # format time
+            format_time(mw_t) +
+            format.blue +
             " total time" +
             format.normal +
             sep[:-1]
         )
-        # add time of algorithm to total time
-        time_s += mw_t
     # format time
-    time_string = format_time(time_s)
+    time_string = format_time(sum(times_mw))
     # get smallest and biggest values from array and the corresponding name
     sorted_times = functions.default().bubblesort(times_mw)
     sorted_steps = functions.default().bubblesort(steps_mw)
-    fastest = algorithms[times_mw.index(sorted_times[0])]
-    smallest = algorithms[steps_mw.index(sorted_steps[0])]
-    slowest = algorithms[times_mw.index(sorted_times[-1])]
-    biggest = algorithms[steps_mw.index(sorted_steps[-1])]
+    # multible extremes are possible
+    fastest = (algorithms[i] for i in find_indices(times_mw, sorted_times[0]))
+    slowest = (algorithms[i] for i in find_indices(times_mw, sorted_times[-1]))
+    smallest = (algorithms[i] for i in find_indices(steps_mw, sorted_steps[0]))
+    biggest = (algorithms[i] for i in find_indices(steps_mw, sorted_steps[-1]))
     # print summary
     print(
         format.yellow +
@@ -310,19 +312,21 @@ def benchmark(algorithms,arg,data):
         sep +
         format.green +
         "Fastest: " +
-        fastest.split("sort")[0].capitalize() +
+        " Sort, ".join(s.split("sort")[0].capitalize() for s in fastest) +
         " Sort\n" +
-        "Smallest footprint: " +
-        smallest.split("sort")[0].capitalize() +
+        format.red +
+        "Slowest: " +
+        " Sort, ".join(s.split("sort")[0].capitalize() for s in slowest) +
         " Sort" +
         format.normal +
         sep +
-        format.red +
-        "Slowest: " +
-        slowest.split("sort")[0].capitalize() +
+        format.green +
+        "Smallest footprint: " +
+        " Sort, ".join(s.split("sort")[0].capitalize() for s in smallest) +
         " Sort\n" +
+        format.red +
         "Biggest footprint: " +
-        biggest.split("sort")[0].capitalize() +
+        " Sort, ".join(s.split("sort")[0].capitalize() for s in biggest) +
         " Sort" +
         format.normal +
         sep[:-1]
@@ -340,7 +344,7 @@ def main(args):
     )
     # check if there are no arguments or the first one is a form of help
     if len(args) == 1 or (len(args) == 2 and \
-       args[1] in ("help", "--help", "-h", "-help", "--h")):
+           args[1] in ("help", "--help", "-h", "-help", "--h")):
         help(algorithms)
         # exit to prevent running the rest of the script
         return
@@ -376,7 +380,7 @@ def main(args):
 
     # check if invalid option specified
     if not (args[1] in algorithms + ("benchmark",) or \
-       args[1] in (str(i) for i in range(len(algorithms)))):
+           args[1] in (str(i) for i in range(len(algorithms)))):
         # make shure that seperator is longer than text displayed
         msg = "No or invalid option specified!"
         if len(msg) > len(sep) and not smallterm:
@@ -393,11 +397,12 @@ def main(args):
             "-> benchmark"
         )
         # show available algorithms to the user
-        for func in algorithms:
-            print(f"-> {func} - {algorithms.index(func)}")
+        for i, func in enumerate(algorithms):
+            print(f"-> {func} - {i}")
         print(format.normal + sep[1:-1])
         # let the user choose one
-        chosen = input(f"{format.cyan}Choose algorithm:\n{format.green}>>{format.normal} ")
+        chosen = \
+            input(f"{format.cyan}Choose algorithm:\n{format.green}>>{format.normal} ")
         # check if it's available and replace it in args
         if chosen in algorithms + ("benchmark",):
             args[1] = chosen
@@ -439,12 +444,10 @@ def main(args):
         num = " items"
     # make sure once again that seperator is longer than text
     headline = algorithm.split("sort")[0].capitalize() + \
-               " Sort Algorithm with " + str(len(data)) + num
+                   " Sort Algorithm with " + str(len(data)) + num
     if len(headline) + 2 > len(sep) and not smallterm:
             sep = "\n" + (len(headline) + 1) * "-" + "\n"
 
-    # format time
-    time_display = format_time(end - begin)
     print(
         sep[1:] +
         format.magenta +
@@ -466,7 +469,8 @@ def main(args):
         sep +
         format.green +
         "sorting took " +
-        time_display +
+        # format time
+        format_time(end - begin) +
         format.normal +
         sep[:-1]
     )
