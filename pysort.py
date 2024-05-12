@@ -112,7 +112,7 @@ def find_indices(array,search):
                 indices.append(i)
         return indices
 
-# function to make shure seperator is not too long
+# function to make shure separator is not too long
 def init_sep(length):
     if os.get_terminal_size()[0] < length:
         return "\n" + os.get_terminal_size()[0] * "-" + "\n"
@@ -141,7 +141,7 @@ def format_time(t):
 
 # function to display help information
 def help(algorithms):
-    # init seperator
+    # init separator
     sep = init_sep(66)
     # print information
     print(
@@ -208,7 +208,7 @@ def benchmark(algorithms,arg,data):
     for algorithm in algorithms:
         globals()["steps_" + algorithm] = []
         globals()["time_" + algorithm] = []
-    # init seperator
+    # init separator
     sep = init_sep(60)
     # init array from input
     if len(data) != 0:
@@ -373,14 +373,14 @@ def main(args):
         # default fallback from task
         data = [2, 20, 100, 1, 50, 5, 200, 10]
     
-    # dynamicly generate length of the seperator
+    # dynamicly generate length of the separator
     # and check if it fits in current terminal
     sep = init_sep(len(str(data)) - 1)
 
     # check if invalid option specified
     if not (args[1] in algorithms + ("benchmark",) or \
            args[1] in (str(i) for i in range(len(algorithms)))):
-        # make shure that seperator is longer than text displayed
+        # make shure that separator is longer than text displayed
         msg = "No or invalid option specified!"
         if len(msg) + 2 > len(sep):
             sep = init_sep(len(msg) + 1)
@@ -441,7 +441,7 @@ def main(args):
         num = " item"
     else:
         num = " items"
-    # make sure once again that seperator is longer than text
+    # make sure once again that separator is longer than text
     headline = algorithm.split("sort")[0].capitalize() + \
                    " Sort Algorithm with " + str(len(data)) + num
     if len(headline) + 2 > len(sep):
